@@ -15,6 +15,9 @@ model User {
   username String
   password String
   sessions Session[]
+
+  activities UserActivities[]
+  quests     UserQuests[]
 }
 
 model Session {
@@ -22,4 +25,46 @@ model Session {
   userId    String
   expiresAt DateTime
   user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model ActivityType {
+  id           Int              @id @default(autoincrement())
+  name         String           @unique
+  experience   Int
+  userActivity UserActivities[]
+}
+
+model UserActivities {
+  id           Int          @id @default(autoincrement())
+  userId       String
+  actionTypeId Int
+  doneAt       DateTime     @default(now())
+  user         User         @relation(fields: [userId], references: [id])
+  actionType   ActivityType @relation(fields: [actionTypeId], references: [id])
+
+  @@unique([userId, actionTypeId, doneAt])
+}
+
+model Title {
+  id        Int         @id @default(autoincrement())
+  titleName String      @unique
+  questType QuestType[]
+}
+
+model QuestType {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  userQuests  UserQuests[]
+  titleId     Int?
+  title       Title?       @relation(fields: [titleId], references: [id])
+}
+
+model UserQuests {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  questId   Int
+  completed Boolean
+  user      User      @relation(fields: [userId], references: [id])
+  questType QuestType @relation(fields: [questId], references: [id])
 }

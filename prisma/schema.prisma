@@ -11,8 +11,8 @@ datasource db {
 }
 
 model User {
-  id       String    @id
-  username String
+  userId   String    @id
+  name     String
   password String
   sessions Session[]
 
@@ -24,7 +24,7 @@ model Session {
   id        String   @id
   userId    String
   expiresAt DateTime
-  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  user      User     @relation(references: [userId], fields: [userId], onDelete: Cascade)
 }
 
 model ActivityType {
@@ -39,7 +39,7 @@ model UserActivities {
   userId       String
   actionTypeId Int
   doneAt       DateTime     @default(now())
-  user         User         @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [userId])
   actionType   ActivityType @relation(fields: [actionTypeId], references: [id])
 
   @@unique([userId, actionTypeId, doneAt])
@@ -65,6 +65,6 @@ model UserQuests {
   userId    String
   questId   Int
   completed Boolean
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [userId])
   questType QuestType @relation(fields: [questId], references: [id])
 }

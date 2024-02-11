@@ -50,11 +50,23 @@ async function main() {
 		});
 	});
 
-	await prisma.user.create({
-		data: {
-			id: generateId(15),
-			username: 'admin',
+	await prisma.user.upsert({
+		where: { userId: 'admin' },
+		update: {},
+		create: {
+			userId: 'admin',
+			name: 'admin',
 			password: await new Argon2id().hash('admin')
+		}
+	});
+
+	await prisma.user.upsert({
+		where: { userId: 'user' },
+		update: {},
+		create: {
+			userId: 'user',
+			name: 'user',
+			password: await new Argon2id().hash('user')
 		}
 	});
 }

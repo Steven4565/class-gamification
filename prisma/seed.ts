@@ -1,11 +1,19 @@
 import { PrismaClient } from '@prisma/client';
+import { generateId } from 'lucia';
+import { Argon2id } from 'oslo/password';
 const prisma = new PrismaClient();
 
-interface ActionType {
+interface ActivityType {
 	name: string;
 	experience: number;
 }
-const actions: ActionType[] = [
+
+interface QuestType {
+	name: string;
+	experience: number;
+}
+
+const activity: ActivityType[] = [
 	{
 		name: 'attendance',
 		experience: 10
@@ -25,12 +33,29 @@ const actions: ActionType[] = [
 ];
 
 async function main() {
-	actions.forEach(async (action) => {
-		await prisma.actionType.upsert({
+	const titles = ['Protector of the Realm', 'The Excellent', 'The Explorer', 'The Conquerer'];
+	titles.forEach(async (title) => {
+		await prisma.title.upsert({
+			where: { titleName: title },
+			update: {},
+			create: { titleName: title }
+		});
+	});
+
+	activity.forEach(async (action) => {
+		await prisma.activityType.upsert({
 			where: { name: action.name },
 			update: {},
 			create: action
 		});
+	});
+
+	await prisma.user.create({
+		data: {
+			id: generateId(15),
+			username: 'admin',
+			password: await new Argon2id().hash('admin')
+		}
 	});
 }
 

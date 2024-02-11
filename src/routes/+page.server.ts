@@ -32,7 +32,19 @@ export const actions: Actions = {
 		const userId = generateId(15);
 		const hashedPassword = await new Argon2id().hash(password);
 
-		// TODO: check if username is already used
+		const userExists =
+			(await prisma.user.findFirst({
+				where: {
+					username: username
+				}
+			})) !== null;
+
+		if (userExists) {
+			return fail(400, {
+				message: 'Username exists'
+			});
+		}
+
 		await prisma.user.create({
 			data: {
 				id: userId,

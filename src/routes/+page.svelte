@@ -1,18 +1,16 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { Label, Input, Button } from 'flowbite-svelte';
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<div class="mx-auto w-[80vw] pt-10">
+	<div class="mb-6">
+		<Label for="username" class="mb-2 block">Large input</Label>
+		<Input id="username" size="lg" placeholder="Username" />
+	</div>
+	<div class="mb-6">
+		<Label for="default-input" class="mb-2 block">Default input</Label>
+		<Input id="default-input" type="password" placeholder="Password" />
+	</div>
 
-<form method="post" use:enhance>
-	<label>
-		<span>Username</span>
-		<input type="text" name="username" />
-	</label>
-	<label>
-		<span>Password</span>
-		<input type="password" name="password" />
-	</label>
-	<button>Sign up</button>
-</form>
+	<Button>Log in</Button>
+</div>

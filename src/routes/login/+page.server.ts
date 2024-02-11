@@ -26,7 +26,7 @@ export const actions: Actions = {
 
 		const existingUser = await prisma.user.findFirst({
 			where: {
-				userId: username.toLowerCase()
+				id: username.toLowerCase()
 			}
 		});
 		if (!existingUser) {
@@ -44,7 +44,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const session = await lucia.createSession(existingUser.userId, {});
+		const session = await lucia.createSession(existingUser.id, {});
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		event.cookies.set(sessionCookie.name, sessionCookie.value, {
 			path: '.',

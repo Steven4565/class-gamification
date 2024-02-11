@@ -8,7 +8,7 @@
 		"db:stop": "docker compose stop",
 		"db:reset": "prisma migrate reset --force",
 		"db:seed": "tsx prisma/seed.ts",
-		"migrate": "prisma migrate dev",
+		"db:migrate": "prisma migrate dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

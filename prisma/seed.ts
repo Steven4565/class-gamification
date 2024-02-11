@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 const prisma = new PrismaClient();
 
@@ -50,11 +49,23 @@ async function main() {
 		});
 	});
 
-	await prisma.user.create({
-		data: {
-			id: generateId(15),
+	await prisma.user.upsert({
+		where: { id: 'admin' },
+		update: {},
+		create: {
+			id: 'admin',
 			username: 'admin',
 			password: await new Argon2id().hash('admin')
+		}
+	});
+
+	await prisma.user.upsert({
+		where: { id: 'user' },
+		update: {},
+		create: {
+			id: 'user',
+			username: 'user',
+			password: await new Argon2id().hash('user')
 		}
 	});
 }

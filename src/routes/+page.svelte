@@ -10,7 +10,7 @@
 	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
 	<div class="flex items-center justify-center gap-10">
 		{#each activities as activity}
-			<ActionButton name={activity.name} maxQuota={3} currentQuota={activity.quota} />
+			<ActionButton {activity} />
 		{/each}
 	</div>
 </div>

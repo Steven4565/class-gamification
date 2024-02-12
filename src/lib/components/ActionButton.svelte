@@ -1,16 +1,25 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import type { ActivityProp } from '$lib/types/activity';
 	import { Button, P } from 'flowbite-svelte';
 
-	export let name = '';
-	export let maxQuota = 1;
-	export let currentQuota = 0;
+	export let activity: ActivityProp;
+	let { id, name, quota, experience } = activity;
 </script>
 
-<div class="flex flex-col items-center justify-center">
-	<Button class="h-[100px] w-[100px] bg-gray-400">
-		{currentQuota}/{maxQuota}
-	</Button>
-	<P class="text-center">
-		{name}
-	</P>
-</div>
+<form method="post" action="?/submitAction" use:enhance>
+	<div class="flex flex-col items-center justify-center">
+		<input type="hidden" name="actionId" value={id} />
+		<Button type="submit" class="flex h-[100px] w-[100px] flex-col bg-gray-400">
+			<span>
+				{quota}/{3}
+			</span>
+			<span class="text-green-300">
+				{experience} XP
+			</span>
+		</Button>
+		<P class="text-center">
+			{name}
+		</P>
+	</div>
+</form>

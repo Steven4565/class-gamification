@@ -47,6 +47,7 @@ export const actions: Actions = {
 		if (!event.locals.user) {
 			return fail(400, { message: 'User not found' });
 		}
+		// TODO: check if user hasn't exceeded quota
 
 		await prisma.userActivities.create({
 			data: {

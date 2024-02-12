@@ -1,1 +1,16 @@
-<div class="mx-auto w-[80vw] pt-10">this is the activitllllllllly page.</div>
+<script lang="ts">
+	import ActionButton from '$lib/components/ActionButton.svelte';
+	import { Heading } from 'flowbite-svelte';
+
+	export let data;
+	let { activities } = data.props;
+</script>
+
+<div>
+	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
+	<div class="flex items-center justify-center gap-10">
+		{#each activities as activity}
+			<ActionButton name={activity.name} maxQuota={3} currentQuota={activity.quota} />
+		{/each}
+	</div>
+</div>

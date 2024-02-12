@@ -6,8 +6,8 @@ export function load(event) {
 		return;
 	}
 
-	if (event.locals.user.name === 'admin') {
+	if (event.locals.isAdmin) {
 		if (!event.url.pathname.startsWith('/admin')) throw redirect(301, '/admin');
 	}
-	return { name: event.locals.user.name };
+	return { user: event.locals.user };
 }

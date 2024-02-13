@@ -1,10 +1,9 @@
 <script lang="ts">
 	import ActionButton from '$lib/components/ActionButton.svelte';
 	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
-	import TestModal from '$lib/components/modals/TestModal.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
-	import { Button, Heading } from 'flowbite-svelte';
-	import type { SubmitFunction } from './$types.js';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { Activity, Button, Heading } from 'flowbite-svelte';
 
 	export let data;
 	let { activities } = data.props;
@@ -15,15 +14,22 @@
 	const onActionClicked = (event: CustomEvent<{ activity: ActivityProp }>) => {
 		selectedActivity = event.detail.activity;
 		openModal = true;
-		console.log({ openModal });
 	};
 
 	const onFormSubmit: SubmitFunction = async (event) => {
-		console.log('form submitted');
-		console.log(event);
+		return async ({ result, update }) => {
+			openModal = false;
+			if (result.type === 'success' && selectedActivity) {
+				activities.forEach((activity) => {
+					if (selectedActivity !== null && activity.id === selectedActivity.id) {
+						activity.quota++;
+						activities = activities;
+					}
+				});
+			}
+			await update();
+		};
 	};
-
-	let open = false;
 </script>
 
 <div>
@@ -33,11 +39,5 @@
 			<ActionButton {activity} on:actionClicked={onActionClicked} />
 		{/each}
 	</div>
-	<ConfirmModal bind:openModal bind:selectedActivity onFormSubmit={() => {}} />
-	<!-- <TestModal bind:open /> -->
-	<Button
-		on:click={() => {
-			open = !open;
-		}}>test</Button
-	>
+	<ConfirmModal bind:openModal bind:selectedActivity {onFormSubmit} />
 </div>

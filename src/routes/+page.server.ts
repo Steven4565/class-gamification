@@ -33,6 +33,7 @@ export async function load(event) {
 
 export const actions: Actions = {
 	submitAction: async (event) => {
+		console.log('hit');
 		const formData = await event.request.formData();
 		const actionId = Number(formData.get('actionId'));
 		if (typeof actionId !== 'number') {

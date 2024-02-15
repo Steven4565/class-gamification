@@ -2,31 +2,50 @@
 	import UserPodium from '$lib/components/leaderboard/UserPodium.svelte';
 	import LeaderboardRow from '$lib/components/leaderboard/LeaderboardRow.svelte';
 	import { Button, Heading } from 'flowbite-svelte';
+	import { enhance } from '$app/forms';
+	import { fail, type SubmitFunction } from '@sveltejs/kit';
 
 	export let data;
 
-	const leaderboard = data.sorted;
+	let leaderboard = data.leaderboard;
 
 	let isGlobal = false;
 
-	function onGlobalClick() {
-		isGlobal = true;
-	}
+	const onSubmit: SubmitFunction = ({ action, cancel }) => {
+		console.log(action.search);
+		if (action.search === '?/global') {
+			isGlobal = true;
+		} else if (action.search === '?/local') {
+			isGlobal = false;
+		} else {
+			return cancel();
+		}
 
-	function onLocalClick() {
-		isGlobal = false;
-	}
+		return async ({ result, update }) => {
+			if (result.type === 'success') {
+				if (result.data) leaderboard = result.data.leaderboard;
+				else {
+					return fail(400, { message: 'No data returned' });
+				}
+				await update();
+			}
+		};
+	};
 </script>
 
 <div class="mx-auto my-0 w-[800px]">
 	<Heading class="text-center">Leaderboards</Heading>
 	<div class="flex items-center justify-center py-10">
-		<Button disabled={!isGlobal} on:click={onGlobalClick}>Global</Button>
-		<Button disabled={isGlobal} on:click={onLocalClick}>Local</Button>
+		<form method="post" action="?/global" use:enhance={onSubmit}>
+			<Button type="submit" disabled={isGlobal}>Global</Button>
+		</form>
+		<form method="post" action="?/local" use:enhance={onSubmit}>
+			<Button type="submit" disabled={!isGlobal}>Local</Button>
+		</form>
 	</div>
 
 	<div class="flex items-center justify-center gap-10">
-		{#each [0, 1, 2] as ranks}
+		{#each [1, 0, 2] as ranks}
 			{#if leaderboard[ranks]}
 				<UserPodium
 					name={leaderboard[ranks].userId}

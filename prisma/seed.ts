@@ -59,14 +59,17 @@ async function main() {
 		}
 	});
 
-	await prisma.user.upsert({
-		where: { id: 'user' },
-		update: {},
-		create: {
-			id: 'user',
-			username: 'user',
-			password: await new Argon2id().hash('user')
-		}
+	const users = ['user', 'user2', 'user3', 'user4', 'user5'];
+	users.forEach(async (user) => {
+		await prisma.user.upsert({
+			where: { id: user },
+			update: {},
+			create: {
+				id: user,
+				username: user,
+				password: await new Argon2id().hash(user)
+			}
+		});
 	});
 }
 

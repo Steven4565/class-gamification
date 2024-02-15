@@ -32,7 +32,7 @@
 			</DropdownHeader>
 			<DropdownItem href="/profile">Profile</DropdownItem>
 			<DropdownDivider />
-			<DropdownItem on:click={() => {}}>Sign out</DropdownItem>
+			<DropdownItem on:click={signOut}>Sign out</DropdownItem>
 		</Dropdown>
 	</NavContainer>
 </Navbar>

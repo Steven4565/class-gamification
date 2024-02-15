@@ -33,24 +33,21 @@ async function getGlobal() {
 
 	const sorted = totalPointsPerUserArray.sort((a, b) => b.experience - a.experience);
 
-	return { sorted };
+	return sorted;
 }
 
-export async function load(event) {
-	return await getGlobal();
+export async function load() {
+	const leaderboard = await getGlobal();
+	return { leaderboard };
 }
 
 export const actions: Actions = {
-	default: async (event) => {
-		const formData = await event.request.formData();
-		const type = formData.get('leaderboardType');
-
-		if (type === 'global') {
-			return await getGlobal();
-		} else if (type === 'local') {
-			return await getLocal();
-		} else {
-			return fail(400, { message: 'Invalid leaderboard type' });
-		}
+	global: async () => {
+		const leaderboard = await getGlobal();
+		return { leaderboard };
+	},
+	local: async () => {
+		const leaderboard = await getLocal();
+		return { leaderboard };
 	}
 };

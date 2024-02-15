@@ -4,7 +4,8 @@
 	import { Button, Heading } from 'flowbite-svelte';
 
 	export let data;
-	$: mockData = data.mockData;
+
+	const leaderboard = data.sorted;
 
 	let isGlobal = false;
 
@@ -25,14 +26,21 @@
 	</div>
 
 	<div class="flex items-center justify-center gap-10">
-		<UserPodium name="testName" points={1000} rank={1} url="/user/100" />
-		<UserPodium name="testName" points={1000} rank={1} url="/user/100" />
-		<UserPodium name="testName" points={1000} rank={1} url="/user/100" />
+		{#each [0, 1, 2] as ranks}
+			{#if leaderboard[ranks]}
+				<UserPodium
+					name={leaderboard[ranks].userId}
+					points={leaderboard[ranks].experience}
+					rank={ranks + 1}
+					url="/user/100"
+				/>
+			{/if}
+		{/each}
 	</div>
 
 	<div class="flex flex-col gap-4">
-		{#each mockData as user}
-			<LeaderboardRow name={user.name} points={user.points} rank={1} />
+		{#each leaderboard.slice(3) as user}
+			<LeaderboardRow name={user.userId} points={user.experience} rank={4} />
 		{/each}
 	</div>
 </div>

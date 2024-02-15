@@ -1,12 +1,15 @@
 <script lang="ts">
 	import ActionButton from '$lib/components/ActionButton.svelte';
 	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
+	import ActionSuccessToast from '$lib/components/toasts/ActionSuccessToast.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Activity, Button, Heading } from 'flowbite-svelte';
+	import { Heading } from 'flowbite-svelte';
 
 	export let data;
 	let { activities } = data.props;
+
+	let openToast = false;
 
 	let openModal = false;
 	let selectedActivity: ActivityProp | null = null;
@@ -17,8 +20,8 @@
 	};
 
 	const onFormSubmit: SubmitFunction = async (event) => {
+		openModal = false;
 		return async ({ result, update }) => {
-			openModal = false;
 			if (result.type === 'success' && selectedActivity) {
 				activities.forEach((activity) => {
 					if (selectedActivity !== null && activity.id === selectedActivity.id) {
@@ -26,6 +29,11 @@
 						activities = activities;
 					}
 				});
+				openToast = true;
+				setTimeout(() => {
+					openToast = false;
+				}, 3000);
+			} else if (result.type === 'error') {
 			}
 			await update();
 		};
@@ -40,4 +48,7 @@
 		{/each}
 	</div>
 	<ConfirmModal bind:openModal bind:selectedActivity {onFormSubmit} />
+	<div class="fixed bottom-0 right-0 mb-10 mr-10">
+		<ActionSuccessToast bind:openToast />
+	</div>
 </div>

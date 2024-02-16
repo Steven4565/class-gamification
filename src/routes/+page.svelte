@@ -4,22 +4,33 @@
 	import ActionSuccessToast from '$lib/components/toasts/ActionSuccessToast.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Heading } from 'flowbite-svelte';
+	import { Heading, Label, Select } from 'flowbite-svelte';
 
 	export let data;
-	let { activities } = data.props;
+	let {
+		props: { activities },
+		classes
+	} = data;
 
 	let openToast = false;
 
 	let openModal = false;
 	let selectedActivity: ActivityProp | null = null;
 
+	let selectedClass = '';
+	const classProp = classes.map((c) => {
+		return {
+			value: c.classId,
+			name: c.class.name
+		};
+	});
+
 	const onActionClicked = (event: CustomEvent<{ activity: ActivityProp }>) => {
 		selectedActivity = event.detail.activity;
 		openModal = true;
 	};
 
-	const onFormSubmit: SubmitFunction = async (event) => {
+	const onFormSubmit: SubmitFunction = async () => {
 		openModal = false;
 		return async ({ result, update }) => {
 			if (result.type === 'success' && selectedActivity) {
@@ -41,6 +52,9 @@
 </script>
 
 <div>
+	<Label>
+		<Select bind:value={selectedClass} items={classProp} />
+	</Label>
 	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
 	<div class="flex items-center justify-center gap-10">
 		{#each activities as activity}

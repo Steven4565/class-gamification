@@ -7,6 +7,7 @@ export async function load(event) {
 	if (!user) throw fail(400, { message: 'User not found' });
 
 	const activities = await prisma.activityType.findMany();
+	// TODO: add class in where clause, handle error when no class is found
 	const userActivities = await prisma.userActivities.findMany({ where: { userId: user.id } });
 	const activitiesMap: Record<number, number> = userActivities.reduce(
 		(quotaMap: Record<number, number>, { actionTypeId }) => {
@@ -24,10 +25,20 @@ export async function load(event) {
 		};
 	});
 
+	const classes = await prisma.userClass.findMany({
+		where: {
+			userId: user.id
+		},
+		include: {
+			class: true
+		}
+	});
+
 	return {
 		props: {
 			activities: activityWithQuota
-		}
+		},
+		classes
 	};
 }
 

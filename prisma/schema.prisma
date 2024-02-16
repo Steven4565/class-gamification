@@ -38,12 +38,15 @@ model ActivityType {
 }
 
 model UserActivities {
-  id           Int          @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   userId       String
   actionTypeId Int
-  doneAt       DateTime     @default(now())
-  user         User         @relation(fields: [userId], references: [id])
-  actionType   ActivityType @relation(fields: [actionTypeId], references: [id])
+  classId      Int
+  doneAt       DateTime @default(now())
+
+  user       User         @relation(fields: [userId], references: [id])
+  actionType ActivityType @relation(fields: [actionTypeId], references: [id])
+  class      Class        @relation(fields: [classId], references: [id])
 
   @@unique([userId, actionTypeId, doneAt])
 }
@@ -55,10 +58,11 @@ model Title {
 }
 
 model Class {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String
-  userClass   UserClass[]
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String
+  userClass      UserClass[]
+  UserActivities UserActivities[]
 }
 
 model UserClass {

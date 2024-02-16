@@ -51,7 +51,8 @@ export const actions: Actions = {
 			...sessionCookie.attributes
 		});
 
+		console.log('username: ', username);
 		if (username === 'admin') throw redirect(302, '/admin');
-		else throw redirect(302, '/admin');
+		else throw redirect(302, '/');
 	}
 };

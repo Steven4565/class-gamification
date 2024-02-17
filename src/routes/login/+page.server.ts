@@ -11,8 +11,6 @@ export const actions: Actions = {
 		const username = formData.get('username');
 		const password = formData.get('password');
 
-		console.log(username);
-
 		if (typeof username !== 'string') {
 			return fail(400, {
 				message: 'Invalid username'
@@ -30,8 +28,6 @@ export const actions: Actions = {
 			}
 		});
 		if (!existingUser) {
-			// This is to prevent timing attacks
-			await new Argon2id().hash(password);
 			return fail(400, {
 				message: 'Incorrect username or password'
 			});
@@ -51,8 +47,7 @@ export const actions: Actions = {
 			...sessionCookie.attributes
 		});
 
-		console.log('username: ', username);
-		if (username === 'admin') throw redirect(302, '/admin');
+		if (existingUser.role === 'admin') throw redirect(302, '/admin');
 		else throw redirect(302, '/');
 	}
 };

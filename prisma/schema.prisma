@@ -8,14 +8,14 @@ datasource db {
 }
 
 model User {
-  id       String    @id
-  username String
+  id       String @id // NIM or admin Id
+  username String // The real name of the user
   password String
-  sessions Session[]
+  role     String // Values being 'admin' or 'user'
 
+  sessions   Session[]
   activities UserActivities[]
-  quests     UserQuests[]
-  UserClass  UserClass[]
+  userClass  UserClass[]
 }
 
 model Session {
@@ -28,51 +28,41 @@ model Session {
 model ActivityType {
   id           Int              @id @default(autoincrement())
   name         String           @unique
+  description  String
   experience   Int
+  maxQuota     Int // Only used when resetTime is "weekly"
+  resetTime    String // Values being either "weekly" or "semester"
+  titleId      Int?
   userActivity UserActivities[]
+  title        Title?           @relation(fields: [titleId], references: [id])
 }
 
 model UserActivities {
-  id           Int          @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   userId       String
   actionTypeId Int
-  doneAt       DateTime     @default(now())
-  user         User         @relation(fields: [userId], references: [id])
-  actionType   ActivityType @relation(fields: [actionTypeId], references: [id])
+  classId      Int
+  doneAt       DateTime @default(now())
+
+  user       User         @relation(fields: [userId], references: [id])
+  actionType ActivityType @relation(fields: [actionTypeId], references: [id])
+  class      Class        @relation(fields: [classId], references: [id])
 
   @@unique([userId, actionTypeId, doneAt])
 }
 
 model Title {
-  id        Int         @id @default(autoincrement())
-  titleName String      @unique
-  questType QuestType[]
-}
-
-model QuestType {
-  id          Int          @id @default(autoincrement())
-  name        String
-  description String
-  userQuests  UserQuests[]
-  titleId     Int?
-  title       Title?       @relation(fields: [titleId], references: [id])
-}
-
-model UserQuests {
-  id        Int       @id @default(autoincrement())
-  userId    String
-  questId   Int
-  completed Boolean
-  user      User      @relation(fields: [userId], references: [id])
-  questType QuestType @relation(fields: [questId], references: [id])
+  id           Int            @id @default(autoincrement())
+  titleName    String         @unique
+  activityType ActivityType[]
 }
 
 model Class {
-  id          Int         @id @default(autoincrement())
-  name        String
-  subject     String
-  description String
-  userClass   UserClass[]
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String
+  userClass      UserClass[]
+  UserActivities UserActivities[]
 }
 
 model UserClass {

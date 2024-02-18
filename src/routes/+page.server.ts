@@ -54,7 +54,7 @@ export async function load(event) {
 
 	return {
 		props: {
-			activities: activityWithQuota
+			actions: activityWithQuota
 		},
 		classes,
 		userId: user.id
@@ -78,27 +78,29 @@ export const actions: Actions = {
 		if (!action) return fail(400, { message: 'Action not found' });
 		if (!user) return fail(400, { message: 'User not found' });
 
-		// TODO: check if user hasn't exceeded quota
+		await prisma.$transaction(async (prisma) => {
+			const quota = await prisma.userActivities.count({
+				where: {
+					userId: user.id,
+					actionTypeId: action.id,
+					classId: classId
+				}
+			});
 
-		await prisma.userActivities.create({
-			data: {
-				actionTypeId: action.id,
-				userId: user.id,
-				doneAt: new Date(),
-				classId: classId
+			if (quota > action.maxQuota) {
+				return fail(400, { message: 'Quota exceeded' });
 			}
+
+			await prisma.userActivities.create({
+				data: {
+					actionTypeId: action.id,
+					userId: user.id,
+					doneAt: new Date(),
+					classId: classId
+				}
+			});
 		});
 
 		return { success: true };
-	},
-	changeClass: async (event) => {
-		const formData = await event.request.formData();
-		const classId = Number(formData.get('classId'));
-		if (!classId) return fail(400, { message: 'Invalid classId' });
-		if (!event.locals.user) return fail(400, { message: 'User not found' });
-
-		const activityWithQuota = await getQuotaMap(event.locals.user.id, classId);
-
-		return { activities: activityWithQuota };
 	}
 };

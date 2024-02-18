@@ -8,10 +8,13 @@
 
 	export let data;
 	let {
-		props: { activities },
+		props: { actions },
 		classes,
 		userId
 	} = data;
+
+	$: quests = actions.filter((action) => action.resetTime === 'semester');
+	$: activities = actions.filter((action) => action.resetTime === 'weekly');
 
 	let openToast = false;
 
@@ -70,7 +73,16 @@
 	<div class="flex items-center justify-center gap-10">
 		{#if activities}
 			{#each activities as activity}
-				<ActionButton {activity} on:actionClicked={onActionClicked} />
+				<ActionButton action={activity} on:actionClicked={onActionClicked} />
+			{/each}
+		{/if}
+	</div>
+
+	<Heading tag="h2" class="m-5 text-center">Quests</Heading>
+	<div class="flex items-center justify-center gap-10">
+		{#if quests}
+			{#each quests as quest}
+				<ActionButton action={quest} on:actionClicked={onActionClicked} />
 			{/each}
 		{/if}
 	</div>

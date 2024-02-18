@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import type { ActivityProp } from '$lib/types/activity';
 	import { Button, P } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	export let activity: ActivityProp;
-	$: ({ name, quota, experience } = activity);
-	const maxQuota = 100; // TODO: add max quota to activity
+	export let action: ActivityProp;
+	$: ({ name, quota, experience, maxQuota } = action);
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -16,7 +14,7 @@
 		class="flex h-[100px] w-[100px] flex-col bg-gray-400"
 		disabled={quota >= maxQuota}
 		on:click={() => {
-			dispatch('actionClicked', { activity });
+			dispatch('actionClicked', { action });
 		}}
 	>
 		<span>

@@ -29,8 +29,8 @@
 		};
 	});
 
-	const onActionClicked = (event: CustomEvent<{ activity: ActivityProp }>) => {
-		selectedActivity = event.detail.activity;
+	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
+		selectedActivity = event.detail.action;
 		openModal = true;
 	};
 
@@ -42,7 +42,7 @@
 				activities.forEach((activity) => {
 					if (selectedActivity !== null && activity.id === selectedActivity.id) {
 						activity.quota++;
-						activities = activities;
+						actions = actions;
 					}
 				});
 				openToast = true;
@@ -59,7 +59,7 @@
 		try {
 			const response = await fetch(`/api/getActivities?classId=${selectedClass}&userId=${userId}`);
 			const data = await response.json();
-			activities = data.activities;
+			actions = data.activities;
 		} catch {
 			throw new Error('Failed to fetch activities');
 		}

@@ -3,7 +3,7 @@
 	import type { ActivityProp } from '$lib/types/activity';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
-	import { Button, Heading, Input, Modal } from 'flowbite-svelte';
+	import { Button, Heading, Modal } from 'flowbite-svelte';
 
 	export let openModal = false;
 	export let onFormSubmit: SubmitFunction;

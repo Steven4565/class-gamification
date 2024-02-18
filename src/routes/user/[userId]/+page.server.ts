@@ -20,7 +20,18 @@ export async function load(event) {
 		return exp + actionType.experience;
 	}, 0);
 
+	const actions = await prisma.userActivities.findMany({
+		where: {
+			userId: event.locals.user.id,
+			classId: firstClass.classId
+		},
+		include: {
+			actionType: true
+		}
+	});
+
 	return {
-		user: { ...event.locals.user, exp }
+		user: { ...event.locals.user, exp },
+		actions
 	};
 }

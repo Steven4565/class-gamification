@@ -121,6 +121,16 @@ async function main() {
 			{ userId: 'user2', classId: 2 }
 		]
 	});
+
+	await prisma.userActivities.createMany({
+		data: [
+			{ userId: 'user', classId: 1, actionTypeId: 1 },
+			{ userId: 'user2', classId: 1, actionTypeId: 3 },
+			{ userId: 'user2', classId: 1, actionTypeId: 2 },
+			{ userId: 'user', classId: 1, actionTypeId: 4 },
+			{ userId: 'user2', classId: 1, actionTypeId: 1 },
+		]
+	})
 }
 
 main()

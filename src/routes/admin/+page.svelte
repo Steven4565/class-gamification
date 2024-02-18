@@ -13,8 +13,7 @@
     type Class = {
         id: number
         name: string
-        subject: string
-        description: string | null
+        description: string
         userCount: number
     }
 
@@ -90,7 +89,7 @@
         </div>
         <div class="flex flex-col items-center text-center">
             <h5 class="mb-1 text-2xl font-medium text-gray-900 dark:text-white">{classData.name}</h5>
-            <span class="text-md text-gray-500 dark:text-gray-400">{classData.subject}</span>
+            <span class="text-md text-gray-500 dark:text-gray-400">{classData.description}</span>
             <span class="text-md text-gray-500 dark:text-gray-400">{classData.userCount} members</span>
         </div>
     </Card>
@@ -112,13 +111,6 @@
             <Label class="flex justify-left items-center">
                 <Input type="text" name="name" required class="ml-2 border-1" color="base"
                     value={$selectedData?.name}
-                />
-            </Label>
-            <span class="text-lg">Subject</span>
-            <span>:</span>
-            <Label class="flex justify-left items-center">
-                <Input type="text" name="subject" required class="ml-2 border-1" color="base"
-                    value={$selectedData?.subject}
                 />
             </Label>
             <span class="text-lg">Description</span>

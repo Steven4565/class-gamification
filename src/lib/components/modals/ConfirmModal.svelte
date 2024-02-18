@@ -7,14 +7,14 @@
 
 	export let openModal = false;
 	export let onFormSubmit: SubmitFunction;
-	export let selectedActivity: ActivityProp | null;
+	export let selectedAction: ActivityProp | null;
 	export let selectedClass: number;
 </script>
 
 <Modal bind:open={openModal}>
 	<form method="post" action="?/submitAction" use:enhance={onFormSubmit}>
-		<Heading tag="h3">Are you sure you want to submit for {selectedActivity?.name ?? ''}?</Heading>
-		<input type="hidden" name="actionId" value={selectedActivity?.id} />
+		<Heading tag="h3">Are you sure you want to submit for {selectedAction?.name ?? ''}?</Heading>
+		<input type="hidden" name="actionId" value={selectedAction?.id} />
 		<input type="hidden" name="classId" value={selectedClass} />
 
 		<div class="flex items-center justify-center">

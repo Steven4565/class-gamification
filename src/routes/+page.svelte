@@ -19,7 +19,7 @@
 	let openToast = false;
 
 	let openModal = false;
-	let selectedActivity: ActivityProp | null = null;
+	let selectedAction: ActivityProp | null = null;
 
 	let selectedClass = classes[0].classId;
 	const classProp = classes.map((c) => {
@@ -30,7 +30,7 @@
 	});
 
 	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
-		selectedActivity = event.detail.action;
+		selectedAction = event.detail.action;
 		openModal = true;
 	};
 
@@ -38,10 +38,10 @@
 	const onFormSubmit: SubmitFunction = async () => {
 		openModal = false;
 		return async ({ result, update }) => {
-			if (result.type === 'success' && selectedActivity) {
-				activities.forEach((activity) => {
-					if (selectedActivity !== null && activity.id === selectedActivity.id) {
-						activity.quota++;
+			if (result.type === 'success' && selectedAction) {
+				actions.forEach((action) => {
+					if (selectedAction !== null && action.id === selectedAction.id) {
+						action.quota++;
 						actions = actions;
 					}
 				});
@@ -86,7 +86,7 @@
 			{/each}
 		{/if}
 	</div>
-	<ConfirmModal bind:openModal {selectedClass} {selectedActivity} {onFormSubmit} />
+	<ConfirmModal bind:openModal {selectedClass} {selectedAction} {onFormSubmit} />
 	<div class="fixed bottom-0 right-0 mb-10 mr-10">
 		<ActionSuccessToast bind:openToast />
 	</div>

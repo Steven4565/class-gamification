@@ -7,7 +7,22 @@ export async function load(event) {
 	});
 	if (!user) throw new Error('User not found');
 
-	const firstClass = await prisma.userClass.findFirst({ where: { userId: user.id } });
+	const classes = await prisma.userClass.findMany({
+		where: {
+			userId: user.id
+		},
+		include: {
+			class: true
+		}
+	});
+	const classProp = classes.map((c) => {
+		return {
+			value: c.classId,
+			name: c.class.name
+		};
+	});
+
+	const firstClass = classes[0];
 	if (!firstClass) throw new Error('User has not joined any classes');
 
 	const userActivities = prisma.userActivities.findMany({
@@ -36,6 +51,7 @@ export async function load(event) {
 
 	return {
 		user: { ...event.locals.user, exp },
-		actions
+		actions,
+		classProp
 	};
 }

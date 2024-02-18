@@ -2,19 +2,19 @@ import prisma from '$lib/server/prisma.js';
 import type { ActivityProp } from '$lib/types/activity';
 import { error, json } from '@sveltejs/kit';
 
-async function getActivities(userId: string, classId: number) {
-	const userActivities = await prisma.userActivities.findMany({
+async function getActions(userId: string, classId: number) {
+	const userActions = await prisma.userActivities.findMany({
 		where: { userId, classId }
 	});
 
-	return userActivities;
+	return userActions;
 }
 
 async function getQuotaMap(userId: string, classId: number) {
-	const userActivities = await getActivities(userId, classId);
+	const userActions = await getActions(userId, classId);
 
 	const activities = await prisma.activityType.findMany();
-	const activitiesMap: Record<number, number> = userActivities.reduce(
+	const activitiesMap: Record<number, number> = userActions.reduce(
 		(quotaMap: Record<number, number>, { actionTypeId }) => {
 			if (!quotaMap[actionTypeId]) quotaMap[actionTypeId] = 1;
 			quotaMap[actionTypeId]++;
@@ -23,14 +23,14 @@ async function getQuotaMap(userId: string, classId: number) {
 		{}
 	);
 
-	const activityWithQuota: ActivityProp[] = activities.map((activity) => {
+	const actionWithQuota: ActivityProp[] = activities.map((action) => {
 		return {
-			...activity,
-			quota: activitiesMap[activity.id] || 0
+			...action,
+			quota: activitiesMap[action.id] || 0
 		};
 	});
 
-	return activityWithQuota;
+	return actionWithQuota;
 }
 
 export const GET = async ({ url }) => {
@@ -41,7 +41,7 @@ export const GET = async ({ url }) => {
 		return error(400, 'Invalid request');
 	}
 
-	const activityWithQuota = await getQuotaMap(userId, parseInt(classId));
+	const actionWithQuota = await getQuotaMap(userId, parseInt(classId));
 
-	return json({ activities: activityWithQuota });
+	return json({ activities: actionWithQuota });
 };

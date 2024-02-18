@@ -16,7 +16,7 @@ async function getQuotaMap(userId: string, classId: number) {
 	const activities = await prisma.activityType.findMany();
 	const activitiesMap: Record<number, number> = userActivities.reduce(
 		(quotaMap: Record<number, number>, { actionTypeId }) => {
-			if (!quotaMap[actionTypeId]) quotaMap[actionTypeId] = 1;
+			if (!quotaMap[actionTypeId]) quotaMap[actionTypeId] = 0;
 			quotaMap[actionTypeId]++;
 			return quotaMap;
 		},
@@ -66,8 +66,8 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const actionId = Number(formData.get('actionId'));
 		const classId = Number(formData.get('classId'));
-		if (typeof actionId !== 'number') return fail(400, { message: 'Invalid actionId' });
-		if (typeof classId !== 'number') return fail(400, { message: 'Invalid classId' });
+		if (Number.isNaN(actionId)) return fail(400, { message: 'Invalid actionId' });
+		if (Number.isNaN(classId)) return fail(400, { message: 'Invalid classId' });
 
 		const user = await prisma.user.findFirst({
 			where: { id: event.locals.user?.id },
@@ -87,7 +87,7 @@ export const actions: Actions = {
 				}
 			});
 
-			if (quota > action.maxQuota) {
+			if (quota >= action.maxQuota) {
 				return fail(400, { message: 'Quota exceeded' });
 			}
 

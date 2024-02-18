@@ -1,14 +1,18 @@
 import prisma from '$lib/server/prisma';
 
 export async function load(event) {
-	if (!event.locals.user) throw new Error('Unauthorized');
+	const user = await prisma.user.findFirst({
+		where: { id: event.params.userId },
+		include: { userClass: true }
+	});
+	if (!user) throw new Error('User not found');
 
-	const firstClass = await prisma.userClass.findFirst({ where: { userId: event.locals.user.id } });
+	const firstClass = await prisma.userClass.findFirst({ where: { userId: user.id } });
 	if (!firstClass) throw new Error('User has not joined any classes');
 
 	const userActivities = prisma.userActivities.findMany({
 		where: {
-			userId: event.locals.user.id,
+			userId: user.id,
 			classId: firstClass.classId
 		},
 		include: {
@@ -22,7 +26,7 @@ export async function load(event) {
 
 	const actions = await prisma.userActivities.findMany({
 		where: {
-			userId: event.locals.user.id,
+			userId: user.id,
 			classId: firstClass.classId
 		},
 		include: {

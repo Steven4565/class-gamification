@@ -56,7 +56,8 @@ export async function load(event) {
 		props: {
 			activities: activityWithQuota
 		},
-		classes
+		classes,
+		userId: user.id
 	};
 }
 

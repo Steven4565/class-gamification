@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import ActionButton from '$lib/components/ActionButton.svelte';
 	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
 	import ActionSuccessToast from '$lib/components/toasts/ActionSuccessToast.svelte';
@@ -10,7 +9,8 @@
 	export let data;
 	let {
 		props: { activities },
-		classes
+		classes,
+		userId
 	} = data;
 
 	let openToast = false;
@@ -52,36 +52,27 @@
 		};
 	};
 
-	// Handle class change
-	let form: HTMLFormElement | null = null;
-	function handleClassChange() {
-		selectedClass = selectedClass;
-
-		if (!form) return;
-		form.requestSubmit();
+	async function onClassChange() {
+		try {
+			const response = await fetch(`/api/getActivities?classId=${selectedClass}&userId=${userId}`);
+			const data = await response.json();
+			activities = data.activities;
+		} catch {
+			throw new Error('Failed to fetch activities');
+		}
 	}
-	$: selectedClass, handleClassChange();
-
-	const onClassSubmit: SubmitFunction = async () => {
-		return async ({ result, update }) => {
-			if (result.type === 'success') {
-				activities = result.data?.activities;
-			} else if (result.type === 'error') {
-			}
-			await update();
-		};
-	};
 </script>
 
 <div>
-	<form bind:this={form} action="?/changeClass" method="post" use:enhance={onClassSubmit}>
-		<Select items={classProp} name="classId" bind:value={selectedClass} />
-	</form>
+	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} />
+
 	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
 	<div class="flex items-center justify-center gap-10">
-		{#each activities as activity}
-			<ActionButton {activity} on:actionClicked={onActionClicked} />
-		{/each}
+		{#if activities}
+			{#each activities as activity}
+				<ActionButton {activity} on:actionClicked={onActionClicked} />
+			{/each}
+		{/if}
 	</div>
 	<ConfirmModal bind:openModal {selectedClass} {selectedActivity} {onFormSubmit} />
 	<div class="fixed bottom-0 right-0 mb-10 mr-10">

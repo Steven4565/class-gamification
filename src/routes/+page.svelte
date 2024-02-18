@@ -4,22 +4,38 @@
 	import ActionSuccessToast from '$lib/components/toasts/ActionSuccessToast.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Heading } from 'flowbite-svelte';
+	import { Heading, Select } from 'flowbite-svelte';
 
 	export let data;
-	let { activities } = data.props;
+	let {
+		props: { actions },
+		classes,
+		userId
+	} = data;
+
+	$: quests = actions.filter((action) => action.resetTime === 'semester');
+	$: activities = actions.filter((action) => action.resetTime === 'weekly');
 
 	let openToast = false;
 
 	let openModal = false;
 	let selectedActivity: ActivityProp | null = null;
 
+	let selectedClass = classes[0].classId;
+	const classProp = classes.map((c) => {
+		return {
+			value: c.classId,
+			name: c.class.name
+		};
+	});
+
 	const onActionClicked = (event: CustomEvent<{ activity: ActivityProp }>) => {
 		selectedActivity = event.detail.activity;
 		openModal = true;
 	};
 
-	const onFormSubmit: SubmitFunction = async (event) => {
+	// Handle activity submit
+	const onFormSubmit: SubmitFunction = async () => {
 		openModal = false;
 		return async ({ result, update }) => {
 			if (result.type === 'success' && selectedActivity) {
@@ -38,16 +54,39 @@
 			await update();
 		};
 	};
+
+	async function onClassChange() {
+		try {
+			const response = await fetch(`/api/getActivities?classId=${selectedClass}&userId=${userId}`);
+			const data = await response.json();
+			activities = data.activities;
+		} catch {
+			throw new Error('Failed to fetch activities');
+		}
+	}
 </script>
 
 <div>
+	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} />
+
 	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
 	<div class="flex items-center justify-center gap-10">
-		{#each activities as activity}
-			<ActionButton {activity} on:actionClicked={onActionClicked} />
-		{/each}
+		{#if activities}
+			{#each activities as activity}
+				<ActionButton action={activity} on:actionClicked={onActionClicked} />
+			{/each}
+		{/if}
 	</div>
-	<ConfirmModal bind:openModal bind:selectedActivity {onFormSubmit} />
+
+	<Heading tag="h2" class="m-5 text-center">Quests</Heading>
+	<div class="flex items-center justify-center gap-10">
+		{#if quests}
+			{#each quests as quest}
+				<ActionButton action={quest} on:actionClicked={onActionClicked} />
+			{/each}
+		{/if}
+	</div>
+	<ConfirmModal bind:openModal {selectedClass} {selectedActivity} {onFormSubmit} />
 	<div class="fixed bottom-0 right-0 mb-10 mr-10">
 		<ActionSuccessToast bind:openToast />
 	</div>

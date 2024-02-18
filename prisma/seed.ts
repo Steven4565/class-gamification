@@ -31,6 +31,13 @@ const activity: Prisma.ActivityTypeCreateInput[] = [
 		description: 'Submitting weekly assignments',
 		maxQuota: 1,
 		resetTime: 'weekly'
+	},
+	{
+		name: 'submitProject',
+		experience: 50,
+		description: 'Submitting a project',
+		maxQuota: 1,
+		resetTime: 'semester'
 	}
 ];
 

@@ -8,7 +8,7 @@
 	export let openModal = false;
 	export let onFormSubmit: SubmitFunction;
 	export let selectedAction: ActivityProp | null;
-	export let selectedClass: number;
+	export let selectedClass: string;
 </script>
 
 <Modal bind:open={openModal}>

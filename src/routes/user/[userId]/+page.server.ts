@@ -1,4 +1,23 @@
 import prisma from '$lib/server/prisma';
+import { redirect } from '@sveltejs/kit';
+
+async function getClasses(userId: string) {
+	const classes = await prisma.userClass.findMany({
+		where: {
+			userId
+		},
+		include: {
+			class: true
+		}
+	});
+	const classProp = classes.map((c) => {
+		return {
+			value: c.classId.toString(),
+			name: c.class.name
+		};
+	});
+	return { classes, classProp };
+}
 
 export async function load(event) {
 	const user = await prisma.user.findFirst({
@@ -7,28 +26,18 @@ export async function load(event) {
 	});
 	if (!user) throw new Error('User not found');
 
-	const classes = await prisma.userClass.findMany({
-		where: {
-			userId: user.id
-		},
-		include: {
-			class: true
-		}
-	});
-	const classProp = classes.map((c) => {
-		return {
-			value: c.classId,
-			name: c.class.name
-		};
-	});
+	const { classes, classProp } = await getClasses(user.id);
+	if (!classes) throw new Error('User has not joined any classes');
 
-	const firstClass = classes[0];
-	if (!firstClass) throw new Error('User has not joined any classes');
+	const classIdParams = event.url.searchParams.get('classId');
+	if (classIdParams === null) throw redirect(300, `/user/${user.id}?classId=${classes[0].classId}`);
+	const classId = parseInt(classIdParams);
+	if (Number.isNaN(classId)) throw new Error('Invalid classId');
 
 	const userActivities = prisma.userActivities.findMany({
 		where: {
 			userId: user.id,
-			classId: firstClass.classId
+			classId
 		},
 		include: {
 			actionType: true
@@ -42,7 +51,7 @@ export async function load(event) {
 	const actions = await prisma.userActivities.findMany({
 		where: {
 			userId: user.id,
-			classId: firstClass.classId
+			classId
 		},
 		include: {
 			actionType: true
@@ -52,6 +61,7 @@ export async function load(event) {
 	return {
 		user: { ...event.locals.user, exp },
 		actions,
-		classProp
+		classProp,
+		classes
 	};
 }

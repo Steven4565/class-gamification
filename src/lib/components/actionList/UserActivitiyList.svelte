@@ -9,14 +9,21 @@
 	export let actionList: ActionList[];
 
 	function formatDate(date: Date) {
-		let day = date.getDate().toString().padStart(2, '0');
-		let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-		let year = date.getFullYear();
-		let hours = date.getHours().toString().padStart(2, '0');
-		let minutes = date.getMinutes().toString().padStart(2, '0');
-		let seconds = date.getSeconds().toString().padStart(2, '0');
+		// console.log('prob', date);
+		console.log(typeof date);
+		// if (!date.getDate) {
+		// 	console.log('no date');
+		// 	console.log(actionList);
+		// }
+		const day = date.getDate();
+		// let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+		// let year = date.getFullYear();
+		// let hours = date.getHours().toString().padStart(2, '0');
+		// let minutes = date.getMinutes().toString().padStart(2, '0');
+		// let seconds = date.getSeconds().toString().padStart(2, '0');
 
-		return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+		// return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+		return 'test';
 	}
 </script>
 
@@ -29,6 +36,7 @@
 			<div>
 				<P size="lg"><b> {action.actionType.name.toUpperCase()} </b></P>
 				<P>{formatDate(action.doneAt)}</P>
+				<!-- <P>{action.doneAt.toString()}</P> -->
 			</div>
 		</div>
 	{/each}

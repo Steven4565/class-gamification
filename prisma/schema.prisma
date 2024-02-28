@@ -34,7 +34,7 @@ model ActivityType {
   resetTime    String // Values being either "weekly" or "semester"
   titleId      Int?
   userActivity UserActivities[]
-  title        Title?           @relation(fields: [titleId], references: [id])
+  title        Title?           @relation(fields: [titleId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 model UserActivities {
@@ -44,9 +44,9 @@ model UserActivities {
   classId      Int
   doneAt       DateTime @default(now())
 
-  user       User         @relation(fields: [userId], references: [id])
-  actionType ActivityType @relation(fields: [actionTypeId], references: [id])
-  class      Class        @relation(fields: [classId], references: [id])
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actionType ActivityType @relation(fields: [actionTypeId], references: [id], onDelete: Cascade)
+  class      Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
 
   @@unique([userId, actionTypeId, doneAt])
 }
@@ -69,6 +69,6 @@ model UserClass {
   id      Int    @id @default(autoincrement())
   userId  String
   classId Int
-  user    User   @relation(fields: [userId], references: [id])
-  class   Class  @relation(fields: [classId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
 }

@@ -1,9 +1,7 @@
 <script lang="ts">
 	import ActionButton from '$lib/components/ActionButton.svelte';
-	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
-	import ActionSuccessToast from '$lib/components/toasts/ActionSuccessToast.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	export let data;
@@ -17,8 +15,18 @@
 	$: activities = actions.filter((action) => action.resetTime === 'weekly');
 
 	const modalStore = getModalStore();
+	const toastStore = getToastStore();
 
-	let openToast = false;
+	const successToast = {
+		type: 'success',
+		message: 'Activity submitted successfully',
+		background: 'variant-filled-success'
+	};
+	const failToast = {
+		type: 'error',
+		message: 'Failed to submit activity',
+		background: 'variant-filled-error'
+	};
 
 	let selectedAction: ActivityProp | null = null;
 	let selectedClass = classes[0].classId;
@@ -29,20 +37,12 @@
 		};
 	});
 
-	// function onModalResponse(r: { selectedAction: ActivityProp | null; selectedClass: number }) {
-	// 	modalStore.close();
-	// 	console.log(r, 'response');
-	// 	selectedAction = r.selectedAction;
-	// 	selectedClass = r.selectedClass;
-	// }
-
 	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
 		selectedAction = event.detail.action;
 
 		const modal: ModalSettings = {
 			type: 'component',
 			component: 'confirmModal',
-			// response: onModalResponse,
 			meta: {
 				selectedAction,
 				selectedClass,
@@ -58,18 +58,15 @@
 
 		return async ({ result, update }) => {
 			if (result.type === 'success' && selectedAction) {
-				console.log('asdfadsf');
 				actions.forEach((action) => {
 					if (selectedAction !== null && action.id === selectedAction.id) {
 						action.quota++;
 						actions = actions;
 					}
 				});
-				openToast = true;
-				setTimeout(() => {
-					openToast = false;
-				}, 3000);
+				toastStore.trigger(successToast);
 			} else if (result.type === 'error') {
+				toastStore.trigger(failToast);
 			}
 			await update();
 		};
@@ -111,9 +108,5 @@
 				<ActionButton action={quest} on:actionClicked={onActionClicked} />
 			{/each}
 		{/if}
-	</div>
-	<!-- <ConfirmModal {selectedClass} {selectedAction} {onFormSubmit} /> -->
-	<div class="fixed bottom-0 right-0 mb-10 mr-10">
-		<ActionSuccessToast bind:openToast />
 	</div>
 </div>

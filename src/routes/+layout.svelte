@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { AppShell, AppBar, Modal, type ModalComponent } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, Modal, type ModalComponent, Toast } from '@skeletonlabs/skeleton';
 	import NavbarLayout from '$lib/components/NavbarLayout.svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
@@ -24,6 +24,7 @@
 </script>
 
 <Modal components={modalRegistry} />
+<Toast />
 
 <AppShell>
 	<svelte:fragment slot="header">

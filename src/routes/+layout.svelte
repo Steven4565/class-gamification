@@ -15,9 +15,12 @@
 
 	// Initialize component modals
 	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
+	import ModifyClassModal from '$lib/components/admin/modals/ModifyClassModal.svelte';
+	import NewClassModal from '$lib/components/admin/modals/NewClassModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
-		confirmModal: { ref: ConfirmModal }
-		// ...
+		confirmModal: { ref: ConfirmModal },
+		modifyClassModal: { ref: ModifyClassModal },
+		newClassModal: { ref: NewClassModal }
 	};
 
 	export let data;

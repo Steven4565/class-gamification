@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { CheckCircleOutline } from 'flowbite-svelte-icons';
-
-	export let openToast = false;
 </script>
 
 <CheckCircleOutline

@@ -1,13 +1,7 @@
 import { redirect, fail, type Actions, error } from '@sveltejs/kit';
 import type { PageServerLoad } from '../$types';
 import prisma from '$lib/server/prisma';
-
-type ClassData = {
-	id: number;
-	name: string;
-	description: string;
-	userCount: number;
-};
+import type { ClassData } from '$lib/types/classData';
 
 export const load: PageServerLoad = async (event) => {
 	try {

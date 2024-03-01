@@ -1,16 +1,23 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, Modal } from '@skeletonlabs/skeleton';
 	import NavbarLayout from '$lib/components/NavbarLayout.svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 
+	// Popup settings
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+	// Initialize stores
+	import { initializeStores } from '@skeletonlabs/skeleton';
+	initializeStores();
 
 	import { page } from '$app/stores';
 
 	export let data;
 </script>
+
+<Modal />
 
 <AppShell>
 	<svelte:fragment slot="header">

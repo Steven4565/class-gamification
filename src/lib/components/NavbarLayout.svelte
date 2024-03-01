@@ -1,15 +1,4 @@
 <script lang="ts">
-	// import {
-	// 	Avatar,
-	// 	Dropdown,
-	// 	DropdownDivider,
-	// 	DropdownHeader,
-	// 	DropdownItem,
-	// 	NavLi,
-	// 	NavUl,
-	// 	Navbar
-	// } from 'flowbite-svelte';
-
 	import { AppBar, Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	export let name: String;

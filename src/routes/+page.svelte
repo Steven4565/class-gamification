@@ -3,8 +3,8 @@
 	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
 	import ActionSuccessToast from '$lib/components/toasts/ActionSuccessToast.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Heading, Select } from 'flowbite-svelte';
 
 	export let data;
 	let {
@@ -16,10 +16,19 @@
 	$: quests = actions.filter((action) => action.resetTime === 'semester');
 	$: activities = actions.filter((action) => action.resetTime === 'weekly');
 
+	const modalStore = getModalStore();
+
 	let openToast = false;
 
 	let openModal = false;
 	let selectedAction: ActivityProp | null = null;
+	const modal: ModalSettings = {
+		type: 'confirm',
+		title: 'Are you sure you want to submit?',
+		response: () => {
+			console.log('test');
+		}
+	};
 
 	let selectedClass = classes[0].classId;
 	const classProp = classes.map((c) => {
@@ -31,7 +40,8 @@
 
 	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
 		selectedAction = event.detail.action;
-		openModal = true;
+		// openModal = true;
+		modalStore.trigger(modal);
 	};
 
 	// Handle activity submit
@@ -67,9 +77,15 @@
 </script>
 
 <div>
-	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} />
+	<select bind:value={selectedClass} on:change={onClassChange} class="select">
+		{#each classProp as classItem}
+			<option value={classItem.value} selected={classItem.value === selectedClass}>
+				{classItem.name}
+			</option>
+		{/each}
+	</select>
 
-	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
+	<h2 class="m-5 text-center">Activities</h2>
 	<div class="flex items-center justify-center gap-10">
 		{#if activities}
 			{#each activities as activity}
@@ -78,7 +94,7 @@
 		{/if}
 	</div>
 
-	<Heading tag="h2" class="m-5 text-center">Quests</Heading>
+	<h2 class="m-5 text-center">Quests</h2>
 	<div class="flex items-center justify-center gap-10">
 		{#if quests}
 			{#each quests as quest}

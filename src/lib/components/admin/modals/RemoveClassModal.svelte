@@ -5,19 +5,14 @@
 
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { classActions } from '$lib/types/classData';
 
 	const modalStore = getModalStore();
 
 	const selectedData = $modalStore[0]?.meta?.selectedData;
 	const type = $modalStore[0]?.meta?.type;
 
-	function clearModal() {
+	const onSubmit: SubmitFunction = () => {
 		modalStore.close();
-		// TODO: show toast
-	}
-
-	const formControl: SubmitFunction = () => {
 		return async (option) => {
 			await option.update();
 		};
@@ -30,10 +25,10 @@
 		<h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
 			Are you sure you want to {type} this class?
 		</h3>
-		<form method="POST" action="?/removeClass" use:enhance={formControl}>
+		<form method="POST" action="?/removeClass" use:enhance={onSubmit}>
 			<input type="hidden" name="id" value={selectedData?.id} />
 			<Button type="submit" color="red" class="me-2">Yes, I'm sure</Button>
-			<Button on:click={clearModal} color="alternative">No, cancel</Button>
+			<Button color="alternative" on:click={() => modalStore.close()}>No, cancel</Button>
 		</form>
 	</div>
 {/if}

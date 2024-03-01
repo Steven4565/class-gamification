@@ -1,11 +1,24 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { classActions } from '$lib/types/classData';
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Input, Label, Button } from 'flowbite-svelte';
 
 	const modalStore = getModalStore();
 	const selectedData = $modalStore[0]?.meta?.selectedData;
+	const action = selectedData ? classActions.edit : classActions.create;
+
+	const formProps = {
+		[classActions.create]: {
+			formUrl: '?/addClass',
+			label: 'Create'
+		},
+		[classActions.edit]: {
+			formUrl: '?/updateClass',
+			label: 'Edit'
+		}
+	};
 
 	const formControl: SubmitFunction = () => {
 		return async (option) => {
@@ -21,12 +34,13 @@
 <form
 	class="flex flex-col space-y-6"
 	method="POST"
-	action={selectedData == undefined ? '?/addClass' : '?/updateClass'}
+	action={formProps[action].formUrl}
 	use:enhance={formControl}
 >
 	<Input type="hidden" name="id" value={selectedData?.id} />
 	<h3 class="mb-2 text-2xl font-medium text-gray-900 dark:text-white">
-		{#if selectedData == undefined}Create{:else}Edit{/if} class
+		{formProps[action].label}
+		class
 	</h3>
 	<div class="custom-grid">
 		<span class="text-lg">Name</span>

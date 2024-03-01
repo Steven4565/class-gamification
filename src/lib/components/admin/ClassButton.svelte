@@ -12,7 +12,7 @@
 	const updateModal: ModalSettings = {
 		type: 'component',
 		title: 'Edit class',
-		component: 'modifyClassModal',
+		component: 'classFieldModal',
 		meta: {
 			type: classActions.edit,
 			selectedData: classData
@@ -21,7 +21,7 @@
 	const deleteModal: ModalSettings = {
 		type: 'component',
 		title: 'Delete class',
-		component: 'modifyClassModal',
+		component: 'removeClassModal',
 		meta: {
 			type: classActions.delete,
 			selectedData: classData

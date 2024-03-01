@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { AppShell, AppBar, Modal, type ModalComponent, Toast } from '@skeletonlabs/skeleton';
+	import { AppShell, Modal, type ModalComponent, Toast } from '@skeletonlabs/skeleton';
 	import NavbarLayout from '$lib/components/NavbarLayout.svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
@@ -15,19 +15,22 @@
 
 	// Initialize component modals
 	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
-	import ModifyClassModal from '$lib/components/admin/modals/ModifyClassModal.svelte';
-	import NewClassModal from '$lib/components/admin/modals/NewClassModal.svelte';
+	import RemoveClassModal from '$lib/components/admin/modals/RemoveClassModal.svelte';
+	import ClassFieldModal from '$lib/components/admin/modals/ClassFieldModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
 		confirmModal: { ref: ConfirmModal },
-		modifyClassModal: { ref: ModifyClassModal },
-		newClassModal: { ref: NewClassModal }
+		removeClassModal: { ref: RemoveClassModal },
+		classFieldModal: { ref: ClassFieldModal }
 	};
 
 	export let data;
 </script>
 
-<Modal components={modalRegistry} />
-<Toast />
+<!-- This div is used to remove the warning that these components does not have parents -->
+<div>
+	<Modal components={modalRegistry} />
+	<Toast />
+</div>
 
 <AppShell>
 	<svelte:fragment slot="header">

@@ -7,5 +7,6 @@ export type ClassData = {
 
 export const classActions = {
 	delete: 'delete',
-	edit: 'edit'
+	edit: 'edit',
+	create: 'create'
 };

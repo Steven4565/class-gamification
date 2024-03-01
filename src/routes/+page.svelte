@@ -20,16 +20,7 @@
 
 	let openToast = false;
 
-	let openModal = false;
 	let selectedAction: ActivityProp | null = null;
-	const modal: ModalSettings = {
-		type: 'confirm',
-		title: 'Are you sure you want to submit?',
-		response: () => {
-			console.log('test');
-		}
-	};
-
 	let selectedClass = classes[0].classId;
 	const classProp = classes.map((c) => {
 		return {
@@ -38,17 +29,36 @@
 		};
 	});
 
+	// function onModalResponse(r: { selectedAction: ActivityProp | null; selectedClass: number }) {
+	// 	modalStore.close();
+	// 	console.log(r, 'response');
+	// 	selectedAction = r.selectedAction;
+	// 	selectedClass = r.selectedClass;
+	// }
+
 	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
 		selectedAction = event.detail.action;
-		// openModal = true;
+
+		const modal: ModalSettings = {
+			type: 'component',
+			component: 'confirmModal',
+			// response: onModalResponse,
+			meta: {
+				selectedAction,
+				selectedClass,
+				onFormSubmit
+			}
+		};
 		modalStore.trigger(modal);
 	};
 
 	// Handle activity submit
 	const onFormSubmit: SubmitFunction = async () => {
-		openModal = false;
+		modalStore.close();
+
 		return async ({ result, update }) => {
 			if (result.type === 'success' && selectedAction) {
+				console.log('asdfadsf');
 				actions.forEach((action) => {
 					if (selectedAction !== null && action.id === selectedAction.id) {
 						action.quota++;
@@ -102,7 +112,7 @@
 			{/each}
 		{/if}
 	</div>
-	<ConfirmModal bind:openModal {selectedClass} {selectedAction} {onFormSubmit} />
+	<!-- <ConfirmModal {selectedClass} {selectedAction} {onFormSubmit} /> -->
 	<div class="fixed bottom-0 right-0 mb-10 mr-10">
 		<ActionSuccessToast bind:openToast />
 	</div>

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { AppShell, AppBar, Modal } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, Modal, type ModalComponent } from '@skeletonlabs/skeleton';
 	import NavbarLayout from '$lib/components/NavbarLayout.svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	import { page } from '$app/stores';
 
 	// Popup settings
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -12,12 +13,17 @@
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	initializeStores();
 
-	import { page } from '$app/stores';
+	// Initialize component modals
+	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
+	const modalRegistry: Record<string, ModalComponent> = {
+		confirmModal: { ref: ConfirmModal }
+		// ...
+	};
 
 	export let data;
 </script>
 
-<Modal />
+<Modal components={modalRegistry} />
 
 <AppShell>
 	<svelte:fragment slot="header">

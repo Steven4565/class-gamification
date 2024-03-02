@@ -23,32 +23,6 @@
 			type: 'create'
 		}
 	};
-
-	// function openModal(action?: string, id?: number) {
-	// 	if (id) {
-	// 		$selectedData = data?.res?.find((item) => item.id === id);
-	// 	}
-
-	// 	if (action === 'delete' && id) {
-	// 		$popupModal = true;
-	// 		$toastData = {
-	// 			color: 'red',
-	// 			description: 'Class has been deleted'
-	// 		};
-	// 	} else if (action === 'update') {
-	// 		$formModal = true;
-	// 		$toastData = {
-	// 			color: 'orange',
-	// 			description: 'Class has been updated'
-	// 		};
-	// 	} else if (action === 'create') {
-	// 		$formModal = true;
-	// 		$toastData = {
-	// 			color: 'green',
-	// 			description: 'Class has been created'
-	// 		};
-	// 	}
-	// }
 </script>
 
 <div class="flex w-full flex-wrap justify-evenly gap-6">

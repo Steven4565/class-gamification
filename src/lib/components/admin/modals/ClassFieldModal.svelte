@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { classActions } from '$lib/types/classData';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Input, Label, Button } from 'flowbite-svelte';
 
+	const toastStore = getToastStore();
 	const modalStore = getModalStore();
+
 	const selectedData = $modalStore[0]?.meta?.selectedData;
 	const action = selectedData ? classActions.edit : classActions.create;
 
@@ -21,12 +23,26 @@
 	};
 
 	const formControl: SubmitFunction = () => {
-		return async (option) => {
-			await option.update();
+		modalStore.close();
 
-			modalStore.close();
+		return async ({ result, update }) => {
+			const pastTense = action === classActions.create ? 'created' : 'updated';
 
-			// TODO: show toast
+			if (result.type === 'success') {
+				const t: ToastSettings = {
+					message: `Class has been ${pastTense}`,
+					background: 'variant-success'
+				};
+				toastStore.trigger(t);
+			} else if (result.type === 'error') {
+				const t: ToastSettings = {
+					message: `Failed to ${pastTense} class`,
+					background: 'variant-error'
+				};
+				toastStore.trigger(t);
+			}
+
+			await update();
 		};
 	};
 </script>

@@ -2,13 +2,10 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UserActivitiyList from '$lib/components/actionList/UserActivitiyList.svelte';
-	import { Select, Heading, P } from 'flowbite-svelte';
 
 	export let data;
 	let { user, classes } = data;
 	let actions = data.actions;
-
-	// let selectedClass = $page.url.searchParams.get('classId') || classProp[0].value;
 
 	let selectedClass = classes[0].classId.toString();
 	const classProp = classes.map((c) => {
@@ -28,8 +25,8 @@
 				action.doneAt = new Date(action.doneAt);
 			});
 			actions = data;
-			// $page.url.searchParams.set('classId', selectedClass);
-			// goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+			$page.url.searchParams.set('classId', selectedClass);
+			goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 		} catch {
 			throw new Error('Failed to fetch user actions');
 		}
@@ -42,21 +39,20 @@
 			<img class="rounded-full" src="https://placekitten.com/200/200" alt="" />
 		</div>
 		<div>
-			<Heading class="mb-3">{user.username}</Heading>
-			<Heading tag="h3">{user.exp} Points</Heading>
+			<h1 class="h1 mb-3">{user.username}</h1>
+			<h3 class="h3">{user.exp} Points</h3>
 			<div></div>
 		</div>
 	</div>
 
 	<div class="mt-5">
-		<Select
-			class="my-3"
-			items={classProp}
-			bind:value={selectedClass}
-			on:change={onClassChange}
-			placeholder=""
-		/>
-		<Heading tag="h2">Recent Activities</Heading>
+		<select bind:value={selectedClass} on:change={onClassChange}>
+			{#each classProp as _class}
+				<option value={_class.value}>{_class.name}</option>
+			{/each}
+		</select>
+
+		<h2>Recent Activities</h2>
 		{#if actions}
 			<UserActivitiyList actionList={actions} />
 		{/if}

@@ -25,12 +25,12 @@
 
 		<div class="card w-72 p-4 shadow-xl" data-popup="popupAvatar">
 			<div><p>{id}</p></div>
-			<div><p>{name}</p></div>
+			<div><p>{username}</p></div>
 			<hr />
 			<nav class="list-nav">
 				<ul>
 					<li>
-						<a href="/profile">Profile</a>
+						<a href={'/user/' + id}>Profile</a>
 					</li>
 					<li>
 						<button on:click={signOut} class="w-full">Logout</button>

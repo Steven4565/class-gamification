@@ -85,7 +85,11 @@
 </script>
 
 <div>
-	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} />
+	<select bind:value={selectedClass} on:change={onClassChange}>
+		{#each classProp as _class}
+			<option value={_class.value}>{_class.name}</option>
+		{/each}
+	</select>
 
 	<h2 class="m-5 text-center">Activities</h2>
 	<div class="flex items-center justify-center gap-10">

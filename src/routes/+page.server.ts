@@ -1,18 +1,21 @@
 import prisma from '$lib/server/prisma';
 import type { ActivityProp } from '$lib/types/activity.js';
-import type { ActivityType } from '@prisma/client';
 import { fail, type Actions } from '@sveltejs/kit';
 
 function getStartOfWeek() {
 	const date = new Date();
 	const day = date.getDay();
-	const diff = date.getDate() - day;
 
-	return new Date(date.setDate(diff));
+	date.setHours(7, 0, 0, 0); // set GMT+7 for ID
+	date.setDate(date.getDate() - day + 1);
+
+	return date;
 }
 
 function getStartOfSemester() {
 	const date = new Date();
+
+	date.setHours(7, 0, 0, 0);
 	date.setMonth(date.getMonth() - 7); // 7 to overshoot because I'm too lazy to calculate the exact date
 	return date;
 }
@@ -42,7 +45,7 @@ async function getQuotaMap(userId: string, classId: number) {
 			const activityResetTime = activities.find((a) => a.id === actionTypeId)?.resetTime;
 			if (activityResetTime === undefined) throw fail(400, { message: 'Activity not found' });
 			const lastResetDate = getActivityResetDate(activityResetTime);
-			console.log({ lastResetDate });
+
 			if (!quotaMap[actionTypeId] || doneAt <= lastResetDate) quotaMap[actionTypeId] = 0;
 			quotaMap[actionTypeId]++;
 			return quotaMap;

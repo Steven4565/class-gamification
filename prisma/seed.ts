@@ -125,8 +125,8 @@ async function main() {
 	await prisma.userActivities.createMany({
 		data: [
 			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-21') },
-			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') },
-			{ userId: 'user', classId: 1, actionTypeId: 5, doneAt: new Date('2022-01-03') }
+			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') }
+			// { userId: 'user', classId: 1, actionTypeId: 5, doneAt: new Date('2022-01-03') }
 		]
 	});
 }

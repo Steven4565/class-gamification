@@ -17,10 +17,14 @@
 	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
 	import RemoveClassModal from '$lib/components/admin/modals/RemoveClassModal.svelte';
 	import ClassFieldModal from '$lib/components/admin/modals/ClassFieldModal.svelte';
+	import AddUsersModal from '$lib/components/admin/modals/AddUsersModal.svelte';
+	import DeleteActionModal from '$lib/components/admin/modals/DeleteActionModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
 		confirmModal: { ref: ConfirmModal },
 		removeClassModal: { ref: RemoveClassModal },
-		classFieldModal: { ref: ClassFieldModal }
+		classFieldModal: { ref: ClassFieldModal },
+		addUsersModal: { ref: AddUsersModal },
+		deleteActionModal: { ref: DeleteActionModal }
 	};
 
 	export let data;

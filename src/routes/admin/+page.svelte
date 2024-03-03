@@ -8,12 +8,6 @@
 
 	const modalStore = getModalStore();
 
-	type Class = {
-		id: number;
-		name: string;
-		description: string;
-		userCount: number;
-	};
 
 	const createModal: ModalSettings = {
 		type: 'component',

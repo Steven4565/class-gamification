@@ -3,12 +3,16 @@
 	import { Card, Avatar, Button, Modal, Label, Textarea, Toast } from 'flowbite-svelte';
 	import { PlusSolid, CircleCheckSolid, ExclamationCircleOutline } from 'flowbite-svelte-icons';
 	import { writable } from 'svelte/store';
-	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { getModalStore } from '@skeletonlabs/skeleton';
+	import ActivityList from '$lib/components/admin/app/ActivityList.svelte';
+	import UserList from '$lib/components/admin/app/UserList.svelte';
+	import { Prisma } from '@prisma/client';
 
-	export let data: PageData;
+	const modalStore = getModalStore();
 
-	// const formModal = writable(false);
+	export let data;
+	$: ({ userClass } = data);
 
 	// const formControl: SubmitFunction = () => {
 	//     return async(option) => {
@@ -34,8 +38,8 @@
 <div class="w-full p-5">
 	<div class="flex items-center gap-10 pb-4">
 		<div>
-			<p class="text-3xl font-medium text-gray-900 dark:text-white">{data.res?.name}</p>
-			<p class="text-xl font-bold text-gray-900 dark:text-white">{data.res?.description}</p>
+			<p class="text-3xl font-medium text-gray-900 dark:text-white">{userClass?.name}</p>
+			<p class="text-xl font-bold text-gray-900 dark:text-white">{userClass?.description}</p>
 		</div>
 		<Button
 			color="dark"
@@ -51,49 +55,9 @@
 	</div>
 
 	{#if $activitySelected}
-		<div class="w-full">
-			{#each data.res?.UserActivities || [] as asg}
-				<Card class="min-w-full">
-					<div class="custom-grid">
-						<p class="text-md font-semibold text-gray-900 dark:text-white">
-							{asg.user.id} has done his/her {asg.actionType.resetTime} Quest. ({asg.actionType
-								.description})
-						</p>
-						<p class="text-md font-semibold text-gray-900 dark:text-white">
-							+{asg.actionType.experience}
-						</p>
-						<input type="hidden" name="asgId" />
-						<Button
-							color="red"
-							on:click={() => {
-								// TODO: add model
-							}}>Delete</Button
-						>
-					</div>
-				</Card>
-			{/each}
-		</div>
+		<ActivityList activities={userClass?.UserActivities} />
 	{:else}
-		<div class="mx-auto flex flex-wrap gap-3">
-			{#each data.res?.userClass || [] as user}
-				<Card padding="lg" class="flex min-h-48 max-w-48 justify-center hover:bg-gray-200" href="#">
-					<div class="flex flex-col items-center">
-						<Avatar size="lg" class="mb-3" src="/images/profile-picture-3.webp" />
-						<h5 class="text-xl font-medium text-gray-900 dark:text-white">{user.userId}</h5>
-					</div>
-				</Card>
-			{/each}
-
-			<Card
-				padding="lg"
-				class="flex min-h-48 max-w-48 cursor-pointer items-center justify-center bg-gray-200 hover:bg-gray-300"
-				on:click={() => {
-					// TODO: show form modal
-				}}
-			>
-				<PlusSolid class="size-1/3" />
-			</Card>
-		</div>
+		<UserList users={userClass?.userClass.map((user) => user.user)} />
 	{/if}
 </div>
 

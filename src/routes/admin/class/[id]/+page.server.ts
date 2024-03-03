@@ -34,7 +34,7 @@ export const load: PageServerLoad = async (event) => {
 				}
 			}
 		});
-		return { res };
+		return { userClass: res };
 	} catch (error) {
 		throw fail(500, { message: 'An error occured while fetching class.' });
 	}

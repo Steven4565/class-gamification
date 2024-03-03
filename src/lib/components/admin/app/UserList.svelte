@@ -1,0 +1,36 @@
+<script lang="ts">
+	import type { User } from '@prisma/client';
+	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { Card, Avatar } from 'flowbite-svelte';
+	import { PlusSolid } from 'flowbite-svelte-icons';
+
+	interface UserData {
+		id: string;
+		username: string;
+	}
+
+	export let users: UserData[] | undefined;
+
+	const modalStore = getModalStore();
+</script>
+
+<div class="mx-auto flex flex-wrap gap-3">
+	{#each users || [] as user}
+		<Card padding="lg" class="flex min-h-48 max-w-48 justify-center hover:bg-gray-200" href="#">
+			<div class="flex flex-col items-center">
+				<Avatar size="lg" class="mb-3" src="/images/profile-picture-3.webp" />
+				<h5 class="text-xl font-medium text-gray-900 dark:text-white">{user.id}</h5>
+			</div>
+		</Card>
+	{/each}
+
+	<Card
+		padding="lg"
+		class="flex min-h-48 max-w-48 cursor-pointer items-center justify-center bg-gray-200 hover:bg-gray-300"
+		on:click={() => {
+			// TODO: show form modal
+		}}
+	>
+		<PlusSolid class="size-1/3" />
+	</Card>
+</div>

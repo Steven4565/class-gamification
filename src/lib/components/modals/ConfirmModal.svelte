@@ -1,30 +1,30 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActivityProp } from '$lib/types/activity';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import { getModalStore } from '@skeletonlabs/skeleton';
 
-	import { Button, Heading, Modal } from 'flowbite-svelte';
+	const modalStore = getModalStore();
 
-	export let openModal = false;
-	export let onFormSubmit: SubmitFunction;
-	export let selectedAction: ActivityProp | null;
-	export let selectedClass: string;
+	const selectedAction = $modalStore[0]?.meta?.selectedAction;
+	const selectedClass = $modalStore[0]?.meta?.selectedClass;
+	const onFormSubmit = $modalStore[0]?.meta?.onFormSubmit;
 </script>
 
-<Modal bind:open={openModal}>
-	<form method="post" action="?/submitAction" use:enhance={onFormSubmit}>
-		<Heading tag="h3">Are you sure you want to submit for {selectedAction?.name ?? ''}?</Heading>
-		<input type="hidden" name="actionId" value={selectedAction?.id} />
-		<input type="hidden" name="classId" value={selectedClass} />
+{#if $modalStore[0]}
+	<div class="min-w-20">
+		<form method="post" action="?/submitAction" use:enhance={onFormSubmit}>
+			<h3>Are you sure you want to submit for {selectedAction?.name ?? ''}?</h3>
+			<input class="input" type="hidden" name="actionId" value={selectedAction?.id} />
+			<input class="input" type="hidden" name="classId" value={selectedClass} />
 
-		<div class="flex items-center justify-center">
-			<Button type="submit">Submit</Button>
-			<Button
-				color="alternative"
-				on:click={() => {
-					openModal = false;
-				}}>Cancel</Button
-			>
-		</div>
-	</form>
-</Modal>
+			<div class="flex items-center justify-center">
+				<button class="variant-outline btn" type="submit">Submit</button>
+				<button
+					class="variant-filled btn"
+					on:click={() => {
+						modalStore.close();
+					}}>Cancel</button
+				>
+			</div>
+		</form>
+	</div>
+{/if}

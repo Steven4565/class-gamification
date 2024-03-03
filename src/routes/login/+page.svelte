@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Label, Input, Button } from 'flowbite-svelte';
 </script>
 
 <div class="mx-auto w-[80vw] pt-10">
+	<h2 class="h2 pb-5">Log in</h2>
 	<form use:enhance method="POST">
 		<div class="mb-6">
-			<Label class="mb-2">
-				<Input type="text" name="username" placeholder="Username" required />
-			</Label>
+			<label class="label">
+				<input class="input p-2" type="text" name="username" placeholder="Username" required />
+			</label>
 		</div>
 		<div class="mb-6">
-			<Label class="mb-2 block">
-				<Input name="password" type="password" placeholder="Password" required />
-			</Label>
+			<label class="label mb-2 block">
+				<input class="input p-2" name="password" type="password" placeholder="Password" required />
+			</label>
 		</div>
 
-		<Button type="submit">Log in</Button>
+		<button type="submit" class="variant-filled btn w-full">Log in</button>
 	</form>
 </div>

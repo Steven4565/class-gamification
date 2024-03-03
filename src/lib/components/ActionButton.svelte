@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { ActivityProp } from '$lib/types/activity';
-	import { Button, P } from 'flowbite-svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	export let action: ActivityProp;
@@ -10,8 +9,9 @@
 </script>
 
 <div class="flex flex-col items-center justify-center">
-	<Button
-		class="flex h-[100px] w-[100px] flex-col bg-gray-400"
+	<button
+		type="button"
+		class="variant-filled btn flex h-[100px] w-[100px] flex-col bg-gray-400"
 		disabled={quota >= maxQuota}
 		on:click={() => {
 			dispatch('actionClicked', { action });
@@ -23,8 +23,8 @@
 		<span class="text-green-300">
 			{experience} XP
 		</span>
-	</Button>
-	<P class="text-center">
+	</button>
+	<p class="text-center">
 		{name}
-	</P>
+	</p>
 </div>

@@ -1,4 +1,19 @@
-/* Write your global styles here, in PostCSS syntax */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind variants;
+
+html,
+body {
+	@apply h-full overflow-hidden;
+}
+
+@layer components {
+	.form-grid {
+		display: grid;
+		grid-template-columns: auto auto minmax(0, 1fr);
+		row-gap: 1rem;
+		column-gap: 0.5rem;
+		align-items: center;
+	}
+}

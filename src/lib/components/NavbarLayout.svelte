@@ -1,39 +1,42 @@
 <script lang="ts">
-	import {
-		Avatar,
-		Dropdown,
-		DropdownDivider,
-		DropdownHeader,
-		DropdownItem,
-		NavLi,
-		NavUl,
-		Navbar
-	} from 'flowbite-svelte';
+	import { AppBar, Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	export let username: String;
 	export let id: String;
 
+	const popupAvatar: PopupSettings = {
+		event: 'click',
+		target: 'popupAvatar',
+		placement: 'bottom-start'
+	};
+
 	function signOut() {}
 </script>
 
-<Navbar let:NavContainer>
-	<NavContainer class="flex justify-between">
-		<NavUl>
-			<NavLi href="/">Home</NavLi>
-			<NavLi href="/leaderboard">Leaderboard</NavLi>
-		</NavUl>
-		<div class="flex items-center md:order-2">
-			<Avatar id="avatar-menu" src="https://placekitten.com/100/100" />
+<AppBar>
+	<svelte:fragment slot="lead">
+		<a href="/" class="bg-initial btn px-3">Home</a>
+		<a href="/leaderboard" class="bg-initial btn px-3">Leaderboard</a>
+	</svelte:fragment>
+	<svelte:fragment slot="trail">
+		<button use:popup={popupAvatar}>
+			<Avatar src="https://placekitten.com/100/100" rounded="rounded-full" />
+		</button>
+
+		<div class="card w-72 p-4 shadow-xl" data-popup="popupAvatar">
+			<div><p>{id}</p></div>
+			<div><p>{name}</p></div>
+			<hr />
+			<nav class="list-nav">
+				<ul>
+					<li>
+						<a href="/profile">Profile</a>
+					</li>
+					<li>
+						<button on:click={signOut} class="w-full">Logout</button>
+					</li>
+				</ul>
+			</nav>
 		</div>
-		<Dropdown placement="bottom" triggeredBy="#avatar-menu">
-			<DropdownHeader>
-				<span class="block text-sm">{id}</span>
-				<span class="tet-sm block truncate font-medium">{username}</span>
-			</DropdownHeader>
-			<DropdownItem href={'/user/' + id}>Profile</DropdownItem>
-			<DropdownItem href="/settings">Settings</DropdownItem>
-			<DropdownDivider />
-			<DropdownItem on:click={signOut}>Sign out</DropdownItem>
-		</Dropdown>
-	</NavContainer>
-</Navbar>
+	</svelte:fragment>
+</AppBar>

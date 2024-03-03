@@ -1,10 +1,8 @@
 <script lang="ts">
 	import ActionButton from '$lib/components/ActionButton.svelte';
-	import ConfirmModal from '$lib/components/modals/ConfirmModal.svelte';
-	import ActionSuccessToast from '$lib/components/toasts/ActionSuccessToast.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
+	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Heading, Select } from 'flowbite-svelte';
 
 	export let data;
 	let {
@@ -16,9 +14,20 @@
 	$: quests = actions.filter((action) => action.resetTime === 'semester');
 	$: activities = actions.filter((action) => action.resetTime === 'weekly');
 
-	let openToast = false;
+	const modalStore = getModalStore();
+	const toastStore = getToastStore();
 
-	let openModal = false;
+	const successToast = {
+		type: 'success',
+		message: 'Activity submitted successfully',
+		background: 'variant-filled-success'
+	};
+	const failToast = {
+		type: 'error',
+		message: 'Failed to submit activity',
+		background: 'variant-filled-error'
+	};
+
 	let selectedAction: ActivityProp | null = null;
 
 	let selectedClass = classes[0].classId.toString();
@@ -31,12 +40,23 @@
 
 	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
 		selectedAction = event.detail.action;
-		openModal = true;
+
+		const modal: ModalSettings = {
+			type: 'component',
+			component: 'confirmModal',
+			meta: {
+				selectedAction,
+				selectedClass,
+				onFormSubmit
+			}
+		};
+		modalStore.trigger(modal);
 	};
 
 	// Handle activity submit
 	const onFormSubmit: SubmitFunction = async () => {
-		openModal = false;
+		modalStore.close();
+
 		return async ({ result, update }) => {
 			if (result.type === 'success' && selectedAction) {
 				actions.forEach((action) => {
@@ -45,11 +65,9 @@
 						actions = actions;
 					}
 				});
-				openToast = true;
-				setTimeout(() => {
-					openToast = false;
-				}, 3000);
+				toastStore.trigger(successToast);
 			} else if (result.type === 'error') {
+				toastStore.trigger(failToast);
 			}
 			await update();
 		};
@@ -67,9 +85,9 @@
 </script>
 
 <div>
-	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} placeholder="" />
+	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} />
 
-	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
+	<h2 class="m-5 text-center">Activities</h2>
 	<div class="flex items-center justify-center gap-10">
 		{#if activities}
 			{#each activities as activity}
@@ -78,16 +96,12 @@
 		{/if}
 	</div>
 
-	<Heading tag="h2" class="m-5 text-center">Quests</Heading>
+	<h2 class="m-5 text-center">Quests</h2>
 	<div class="flex items-center justify-center gap-10">
 		{#if quests}
 			{#each quests as quest}
 				<ActionButton action={quest} on:actionClicked={onActionClicked} />
 			{/each}
 		{/if}
-	</div>
-	<ConfirmModal bind:openModal {selectedClass} {selectedAction} {onFormSubmit} />
-	<div class="fixed bottom-0 right-0 mb-10 mr-10">
-		<ActionSuccessToast bind:openToast />
 	</div>
 </div>

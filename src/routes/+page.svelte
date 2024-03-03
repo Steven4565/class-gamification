@@ -21,10 +21,10 @@
 	let openModal = false;
 	let selectedAction: ActivityProp | null = null;
 
-	let selectedClass = classes[0].classId;
+	let selectedClass = classes[0].classId.toString();
 	const classProp = classes.map((c) => {
 		return {
-			value: c.classId,
+			value: c.classId.toString(),
 			name: c.class.name
 		};
 	});
@@ -67,7 +67,7 @@
 </script>
 
 <div>
-	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} />
+	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} placeholder="" />
 
 	<Heading tag="h2" class="m-5 text-center">Activities</Heading>
 	<div class="flex items-center justify-center gap-10">

@@ -4,7 +4,10 @@ import { error, json } from '@sveltejs/kit';
 
 async function getActions(userId: string, classId: number) {
 	const userActions = await prisma.userActivities.findMany({
-		where: { userId, classId }
+		where: { userId, classId },
+		include: {
+			actionType: true
+		}
 	});
 
 	return userActions;

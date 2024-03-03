@@ -10,7 +10,7 @@
 		Navbar
 	} from 'flowbite-svelte';
 
-	export let name: String;
+	export let username: String;
 	export let id: String;
 
 	function signOut() {}
@@ -28,9 +28,10 @@
 		<Dropdown placement="bottom" triggeredBy="#avatar-menu">
 			<DropdownHeader>
 				<span class="block text-sm">{id}</span>
-				<span class="tet-sm block truncate font-medium">{name}</span>
+				<span class="tet-sm block truncate font-medium">{username}</span>
 			</DropdownHeader>
-			<DropdownItem href="/profile">Profile</DropdownItem>
+			<DropdownItem href={'/user/' + id}>Profile</DropdownItem>
+			<DropdownItem href="/settings">Settings</DropdownItem>
 			<DropdownDivider />
 			<DropdownItem on:click={signOut}>Sign out</DropdownItem>
 		</Dropdown>

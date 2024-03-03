@@ -2,6 +2,24 @@ import prisma from '$lib/server/prisma';
 import type { ActivityProp } from '$lib/types/activity.js';
 import { fail, type Actions } from '@sveltejs/kit';
 
+function getStartOfWeek() {
+	const date = new Date();
+	const day = date.getDay();
+
+	date.setHours(7, 0, 0, 0); // set GMT+7 for ID
+	date.setDate(date.getDate() - day + 1);
+
+	return date;
+}
+
+function getStartOfSemester() {
+	const date = new Date();
+
+	date.setHours(7, 0, 0, 0);
+	date.setMonth(date.getMonth() - 7); // 7 to overshoot because I'm too lazy to calculate the exact date
+	return date;
+}
+
 async function getActivities(userId: string, classId: number) {
 	const userActivities = await prisma.userActivities.findMany({
 		where: { userId, classId }
@@ -10,13 +28,25 @@ async function getActivities(userId: string, classId: number) {
 	return userActivities;
 }
 
+function getActivityResetDate(resetTime: string) {
+	if (resetTime === 'weekly') {
+		return getStartOfWeek();
+	} else return getStartOfSemester();
+}
+
 async function getQuotaMap(userId: string, classId: number) {
 	const userActivities = await getActivities(userId, classId);
 
 	const activities = await prisma.activityType.findMany();
+	if (!activities) throw fail(400, { message: 'No activities found' });
+
 	const activitiesMap: Record<number, number> = userActivities.reduce(
-		(quotaMap: Record<number, number>, { actionTypeId }) => {
-			if (!quotaMap[actionTypeId]) quotaMap[actionTypeId] = 0;
+		(quotaMap: Record<number, number>, { actionTypeId, doneAt }) => {
+			const activityResetTime = activities.find((a) => a.id === actionTypeId)?.resetTime;
+			if (activityResetTime === undefined) throw fail(400, { message: 'Activity not found' });
+			const lastResetDate = getActivityResetDate(activityResetTime);
+
+			if (!quotaMap[actionTypeId] || doneAt <= lastResetDate) quotaMap[actionTypeId] = 0;
 			quotaMap[actionTypeId]++;
 			return quotaMap;
 		},
@@ -82,7 +112,10 @@ export const actions: Actions = {
 				where: {
 					userId: user.id,
 					actionTypeId: action.id,
-					classId: classId
+					classId: classId,
+					doneAt: {
+						gte: action.resetTime === 'weekly' ? getStartOfWeek() : getStartOfSemester()
+					}
 				}
 			});
 

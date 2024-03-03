@@ -3,7 +3,6 @@
 	import { classActions } from '$lib/types/classData';
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { Input, Label, Button } from 'flowbite-svelte';
 
 	const toastStore = getToastStore();
 	const modalStore = getModalStore();
@@ -53,7 +52,7 @@
 	action={formProps[action].formUrl}
 	use:enhance={formControl}
 >
-	<Input type="hidden" name="id" value={selectedData?.id} />
+	<input type="hidden" name="id" value={selectedData?.id} />
 	<h3 class="mb-2 text-2xl font-medium text-gray-900 dark:text-white">
 		{formProps[action].label}
 		class
@@ -61,32 +60,32 @@
 	<div class="custom-grid">
 		<span class="text-lg">Name</span>
 		<span>:</span>
-		<Label class="justify-left flex items-center">
-			<Input
+		<label class="justify-left label flex items-center">
+			<input
 				type="text"
 				name="name"
 				required
-				class="border-1 ml-2"
+				class="border-1 input ml-2"
 				color="base"
-				value={selectedData?.name}
+				value={selectedData?.name ?? ''}
 			/>
-		</Label>
+		</label>
 		<span class="text-lg">Description</span>
 		<span>:</span>
-		<Label class="justify-left flex items-center">
-			<Input
+		<label class="justify-left label flex items-center">
+			<input
 				type="text"
 				name="description"
-				class="border-1 ml-2"
+				class="border-1 input ml-2"
 				color="base"
-				value={selectedData?.description}
+				value={selectedData?.description ?? ''}
 			/>
-		</Label>
+		</label>
 	</div>
-	<Button
+	<button
 		type="submit"
-		class="mx-auto w-fit rounded-md border-2 border-solid border-green-400 bg-lime-300 bg-opacity-15"
-		color="none">Done</Button
+		class="variant-filled-success btn mx-auto w-fit rounded-md border-2 border-solid border-green-400 bg-lime-300 bg-opacity-15"
+		color="none">Done</button
 	>
 </form>
 

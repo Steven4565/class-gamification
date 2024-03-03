@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { classActions, type ClassData } from '$lib/types/classData';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { Dropdown, DropdownItem } from 'flowbite-svelte';
+	import {
+		getModalStore,
+		popup,
+		type ModalSettings,
+		type PopupSettings
+	} from '@skeletonlabs/skeleton';
 	import { DotsVerticalSolid } from 'flowbite-svelte-icons';
 
 	export let classData: ClassData;
+	export let index: number;
 
 	const modalStore = getModalStore();
 
@@ -27,6 +32,22 @@
 			selectedData: classData
 		}
 	};
+
+	function onEdit(event: Event) {
+		event.stopPropagation();
+		modalStore.trigger(updateModal);
+	}
+
+	function onDelete(event: Event) {
+		event.stopPropagation();
+		modalStore.trigger(deleteModal);
+	}
+
+	const popupClick: PopupSettings = {
+		event: 'click',
+		target: 'popupClassButtonOption-' + index,
+		placement: 'bottom'
+	};
 </script>
 
 <button
@@ -34,8 +55,22 @@
 	on:click={() => goto(`/admin/class/${classData.id}`)}
 >
 	<div class="absolute right-7 top-7">
-		<DotsVerticalSolid size="lg" on:click={(event) => event.stopPropagation()} />
-		<Dropdown class="w-fit">
+		<button
+			use:popup={popupClick}
+			on:click={(event) => {
+				event.stopPropagation();
+			}}
+		>
+			<DotsVerticalSolid size="lg" />
+		</button>
+
+		<div data-popup={'popupClassButtonOption-' + index}>
+			<div>
+				<button on:click={onEdit}> Edit </button>
+				<button on:click={onDelete} class="text-red-500"> Delete </button>
+			</div>
+
+			<!-- <Dropdown class="w-fit">
 			<DropdownItem
 				on:click={(event) => {
 					modalStore.trigger(updateModal);
@@ -51,7 +86,8 @@
 					event.stopPropagation();
 				}}>Delete</DropdownItem
 			>
-		</Dropdown>
+		</Dropdown> -->
+		</div>
 	</div>
 	<div class="flex flex-col items-center text-center">
 		<h5 class="mb-1 text-2xl font-medium text-gray-900 dark:text-white">{classData.name}</h5>

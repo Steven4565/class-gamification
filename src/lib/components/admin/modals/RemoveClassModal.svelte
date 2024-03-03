@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from 'flowbite-svelte';
 	import { ExclamationCircleOutline } from 'flowbite-svelte-icons';
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
@@ -42,8 +41,10 @@
 		</h3>
 		<form method="POST" action="?/removeClass" use:enhance={onSubmit}>
 			<input type="hidden" name="id" value={selectedData?.id} />
-			<Button type="submit" color="red" class="me-2">Yes, I'm sure</Button>
-			<Button color="alternative" on:click={() => modalStore.close()}>No, cancel</Button>
+			<button type="submit" color="variant-filled-error btn" class="me-2">Yes, I'm sure</button>
+			<button class="variant-filled-secondary btn" on:click={() => modalStore.close()}
+				>No, cancel</button
+			>
 		</form>
 	</div>
 {/if}

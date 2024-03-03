@@ -8,7 +8,6 @@
 
 	const modalStore = getModalStore();
 
-
 	const createModal: ModalSettings = {
 		type: 'component',
 		title: 'Create class',
@@ -20,8 +19,8 @@
 </script>
 
 <div class="flex w-full flex-wrap justify-evenly gap-6">
-	{#each data.res || [] as classData}
-		<ClassButton {classData} />
+	{#each data.res || [] as classData, i}
+		<ClassButton {classData} index={i} />
 	{/each}
 
 	<button

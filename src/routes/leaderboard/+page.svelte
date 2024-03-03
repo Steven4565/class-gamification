@@ -1,7 +1,6 @@
 <script lang="ts">
 	import UserPodium from '$lib/components/leaderboard/UserPodium.svelte';
 	import LeaderboardRow from '$lib/components/leaderboard/LeaderboardRow.svelte';
-	import { Button, Heading } from 'flowbite-svelte';
 	import { enhance } from '$app/forms';
 	import { fail, type SubmitFunction } from '@sveltejs/kit';
 

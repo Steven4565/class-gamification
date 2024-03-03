@@ -1,5 +1,5 @@
 import prisma from '$lib/server/prisma';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 async function getClasses(userId: string) {
 	const classes = await prisma.userClass.findMany({
@@ -24,16 +24,16 @@ export async function load(event) {
 		where: { id: event.params.userId },
 		include: { userClass: true }
 	});
-	if (!user) throw new Error('User not found');
+	if (!user) error(400, { message: 'User not found' });
 
 	const { classes, classProp } = await getClasses(user.id);
-	if (!classes) throw new Error('User has not joined any classes');
+	if (!classes) error(400, { message: 'User has not joined any classes' });
 
 	const classIdParams = event.url.searchParams.get('classId');
-	if (classIdParams === null) throw redirect(300, `/user/${user.id}?classId=${classes[0].classId}`);
+	if (classIdParams === null) redirect(300, `/user/${user.id}?classId=${classes[0].classId}`);
 
 	const classId = parseInt(classIdParams);
-	if (Number.isNaN(classId)) throw new Error('Invalid classId');
+	if (Number.isNaN(classId)) error(400, { message: 'Invalid classId' });
 
 	const userActivities = prisma.userActivities.findMany({
 		where: {

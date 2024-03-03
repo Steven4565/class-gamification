@@ -2,7 +2,7 @@
 	import ActionButton from '$lib/components/ActionButton.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import { error, type SubmitFunction } from '@sveltejs/kit';
 
 	export let data;
 	let {
@@ -79,7 +79,7 @@
 			const data = await response.json();
 			actions = data.activities;
 		} catch {
-			throw new Error('Failed to fetch activities');
+			error(400, { message: 'Failed to fetch activities' });
 		}
 	}
 </script>

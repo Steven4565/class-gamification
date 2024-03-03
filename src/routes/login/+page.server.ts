@@ -47,7 +47,7 @@ export const actions: Actions = {
 			...sessionCookie.attributes
 		});
 
-		if (existingUser.role === 'admin') throw redirect(302, '/admin');
-		else throw redirect(302, '/');
+		if (existingUser.role === 'admin') redirect(302, '/admin');
+		else redirect(302, '/');
 	}
 };

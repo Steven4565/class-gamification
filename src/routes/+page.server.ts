@@ -1,6 +1,6 @@
 import prisma from '$lib/server/prisma';
 import type { ActivityProp } from '$lib/types/activity.js';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, error } from '@sveltejs/kit';
 
 function getStartOfWeek() {
 	const date = new Date();
@@ -38,12 +38,12 @@ async function getQuotaMap(userId: string, classId: number) {
 	const userActivities = await getActivities(userId, classId);
 
 	const activities = await prisma.activityType.findMany();
-	if (!activities) throw fail(400, { message: 'No activities found' });
+	if (!activities) error(400, { message: 'No activities found' });
 
 	const activitiesMap: Record<number, number> = userActivities.reduce(
 		(quotaMap: Record<number, number>, { actionTypeId, doneAt }) => {
 			const activityResetTime = activities.find((a) => a.id === actionTypeId)?.resetTime;
-			if (activityResetTime === undefined) throw fail(400, { message: 'Activity not found' });
+			if (activityResetTime === undefined) error(400, { message: 'Activity not found' });
 			const lastResetDate = getActivityResetDate(activityResetTime);
 
 			if (!quotaMap[actionTypeId] || doneAt <= lastResetDate) quotaMap[actionTypeId] = 0;
@@ -68,26 +68,31 @@ export async function load(event) {
 		where: { id: event.locals.user?.id },
 		include: { userClass: true }
 	});
-	if (!user) throw fail(400, { message: 'User not found' });
-	if (!user.userClass.length) throw fail(400, { message: 'User not found' });
+	if (!user) error(400, { message: 'User not found' });
+	if (!user.userClass.length) error(400, { message: 'User not found' });
 
-	const activityWithQuota = await getQuotaMap(user.id, user.userClass[0].classId);
-	const classes = await prisma.userClass.findMany({
-		where: {
+	try {
+		const activityWithQuota = await getQuotaMap(user.id, user.userClass[0].classId);
+		const classes = await prisma.userClass.findMany({
+			where: {
+				userId: user.id
+			},
+			include: {
+				class: true
+			}
+		});
+
+		return {
+			props: {
+				actions: activityWithQuota
+			},
+			classes,
 			userId: user.id
-		},
-		include: {
-			class: true
-		}
-	});
-
-	return {
-		props: {
-			actions: activityWithQuota
-		},
-		classes,
-		userId: user.id
-	};
+		};
+	} catch (e) {
+		console.error(e);
+		error(500, { message: 'Internal server error' });
+	}
 }
 
 export const actions: Actions = {

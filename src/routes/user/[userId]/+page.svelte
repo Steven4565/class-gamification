@@ -2,6 +2,7 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UserActivitiyList from '$lib/components/actionList/UserActivitiyList.svelte';
+	import { error } from '@sveltejs/kit';
 
 	export let data;
 	let { user, classes } = data;
@@ -28,7 +29,7 @@
 			$page.url.searchParams.set('classId', selectedClass);
 			goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 		} catch {
-			throw new Error('Failed to fetch user actions');
+			error(400, { message: 'Failed to fetch user actions' });
 		}
 	}
 </script>

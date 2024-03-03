@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button, Label, Textarea } from 'flowbite-svelte';
-	import { ExclamationCircleOutline } from 'flowbite-svelte-icons';
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
@@ -34,10 +32,10 @@
 {#if $modalStore[0]}
 	<form class="flex flex-col space-y-3" method="POST" action="?/addStudent" use:enhance={onSubmit}>
 		<h3 class="mb-2 text-xl font-medium text-gray-900 dark:text-white">Add Student</h3>
-		<Label class="space-y-2">
+		<label class="space-y-2">
 			<span>NIM</span>
-			<Textarea type="text" name="studentId" rows="3" class="flex h-fit text-wrap" />
-		</Label>
-		<Button type="submit" class="w-full1">Add</Button>
+			<textarea name="studentId" rows="3" class="flex h-fit text-wrap" />
+		</label>
+		<button type="submit" class="w-full1 variant-filled btn">Add</button>
 	</form>
 {/if}

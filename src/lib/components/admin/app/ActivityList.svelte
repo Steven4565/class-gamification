@@ -1,7 +1,6 @@
 <script lang="ts">
-	import type { Prisma, UserActivities } from '@prisma/client';
+	import type { Prisma } from '@prisma/client';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { Card, Button } from 'flowbite-svelte';
 
 	interface UserData {
 		id: string;
@@ -25,7 +24,7 @@
 
 <div class="w-full">
 	{#each activities || [] as asg}
-		<Card class="min-w-ull">
+		<div class="min-w-ull card">
 			<div class="custom-grid">
 				<p class="text-md font-semibold text-gray-900 dark:text-white">
 					{asg.user.id} has done his/her {asg.actionType.resetTime} Quest. ({asg.actionType
@@ -42,6 +41,6 @@
 					}}>Delete</button
 				>
 			</div>
-		</Card>
+		</div>
 	{/each}
 </div>

@@ -1,10 +1,6 @@
 <script lang="ts">
-	import { Card, Avatar, Button, Modal, Label, Textarea, Toast } from 'flowbite-svelte';
-	import { getModalStore } from '@skeletonlabs/skeleton';
 	import ActivityList from '$lib/components/admin/app/ActivityList.svelte';
 	import UserList from '$lib/components/admin/app/UserList.svelte';
-
-	const modalStore = getModalStore();
 
 	export let data;
 	$: ({ userClass } = data);

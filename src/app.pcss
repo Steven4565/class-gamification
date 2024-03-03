@@ -7,3 +7,13 @@ html,
 body {
 	@apply h-full overflow-hidden;
 }
+
+@layer components {
+	.form-grid {
+		display: grid;
+		grid-template-columns: auto auto minmax(0, 1fr);
+		row-gap: 1rem;
+		column-gap: 0.5rem;
+		align-items: center;
+	}
+}

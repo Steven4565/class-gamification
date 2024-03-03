@@ -25,7 +25,7 @@
 <div class="w-full">
 	{#each activities || [] as asg}
 		<div class="min-w-ull card">
-			<div class="custom-grid">
+			<div class="form-grid">
 				<p class="text-md font-semibold text-gray-900 dark:text-white">
 					{asg.user.id} has done his/her {asg.actionType.resetTime} Quest. ({asg.actionType
 						.description})

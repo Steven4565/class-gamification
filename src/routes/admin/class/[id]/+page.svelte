@@ -32,12 +32,3 @@
 		<UserList users={userClass?.userClass.map((user) => user.user)} />
 	{/if}
 </div>
-
-<!-- <style>
-	.custom-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto auto;
-		column-gap: 1rem;
-		align-items: center;
-	}
-</style> -->

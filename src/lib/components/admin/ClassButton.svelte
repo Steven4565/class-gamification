@@ -51,7 +51,7 @@
 </script>
 
 <button
-	class="card relative flex min-h-60 min-w-60 max-w-60 cursor-pointer justify-center hover:bg-gray-200"
+	class="card relative flex min-h-60 min-w-60 max-w-60 cursor-pointer items-center justify-center hover:bg-gray-200"
 	on:click={() => goto(`/admin/class/${classData.id}`)}
 >
 	<div class="absolute right-7 top-7">
@@ -69,24 +69,6 @@
 				<button on:click={onEdit}> Edit </button>
 				<button on:click={onDelete} class="text-red-500"> Delete </button>
 			</div>
-
-			<!-- <Dropdown class="w-fit">
-			<DropdownItem
-				on:click={(event) => {
-					modalStore.trigger(updateModal);
-
-					event.stopPropagation();
-				}}>Edit</DropdownItem
-			>
-			<DropdownItem
-				class="text-red-500"
-				on:click={(event) => {
-					modalStore.trigger(deleteModal);
-
-					event.stopPropagation();
-				}}>Delete</DropdownItem
-			>
-		</Dropdown> -->
 		</div>
 	</div>
 	<div class="flex flex-col items-center text-center">

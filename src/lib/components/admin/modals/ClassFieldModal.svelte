@@ -57,7 +57,7 @@
 		{formProps[action].label}
 		class
 	</h3>
-	<div class="custom-grid">
+	<div class="form-grid">
 		<span class="text-lg">Name</span>
 		<span>:</span>
 		<label class="justify-left label flex items-center">
@@ -88,13 +88,3 @@
 		color="none">Done</button
 	>
 </form>
-
-<style>
-	.custom-grid {
-		display: grid;
-		grid-template-columns: auto auto minmax(0, 1fr);
-		row-gap: 1rem;
-		column-gap: 0.5rem;
-		align-items: center;
-	}
-</style>

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import UserPodium from '$lib/components/leaderboard/UserPodium.svelte';
 	import LeaderboardRow from '$lib/components/leaderboard/LeaderboardRow.svelte';
-	import { Button, Heading } from 'flowbite-svelte';
 	import { enhance } from '$app/forms';
 	import { fail, type SubmitFunction } from '@sveltejs/kit';
 
@@ -12,7 +11,6 @@
 	let isGlobal = false;
 
 	const onSubmit: SubmitFunction = ({ action, cancel }) => {
-		console.log(action.search);
 		if (action.search === '?/global') {
 			isGlobal = true;
 		} else if (action.search === '?/local') {
@@ -34,13 +32,13 @@
 </script>
 
 <div class="mx-auto my-0 w-[800px]">
-	<Heading class="text-center">Leaderboards</Heading>
+	<h2 class="h2 text-center">Leaderboards</h2>
 	<div class="flex items-center justify-center py-10">
 		<form method="post" action="?/global" use:enhance={onSubmit}>
-			<Button type="submit" disabled={isGlobal}>Global</Button>
+			<button class="variant-filled btn" type="submit" disabled={isGlobal}>Global</button>
 		</form>
 		<form method="post" action="?/local" use:enhance={onSubmit}>
-			<Button type="submit" disabled={!isGlobal}>Local</Button>
+			<button class="variant-filled btn" type="submit" disabled={!isGlobal}>Local</button>
 		</form>
 	</div>
 

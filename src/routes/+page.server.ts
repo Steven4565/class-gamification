@@ -42,7 +42,6 @@ export async function load(event) {
 	if (!user.userClass.length) throw fail(400, { message: 'User not found' });
 
 	const activityWithQuota = await getQuotaMap(user.id, user.userClass[0].classId);
-
 	const classes = await prisma.userClass.findMany({
 		where: {
 			userId: user.id

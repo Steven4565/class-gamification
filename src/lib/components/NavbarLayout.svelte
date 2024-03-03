@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AppBar, Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
-	export let name: String;
+	export let username: String;
 	export let id: String;
 
 	const popupAvatar: PopupSettings = {

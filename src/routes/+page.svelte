@@ -29,10 +29,11 @@
 	};
 
 	let selectedAction: ActivityProp | null = null;
-	let selectedClass = classes[0].classId;
+
+	let selectedClass = classes[0].classId.toString();
 	const classProp = classes.map((c) => {
 		return {
-			value: c.classId,
+			value: c.classId.toString(),
 			name: c.class.name
 		};
 	});
@@ -84,13 +85,7 @@
 </script>
 
 <div>
-	<select bind:value={selectedClass} on:change={onClassChange} class="select">
-		{#each classProp as classItem}
-			<option value={classItem.value} selected={classItem.value === selectedClass}>
-				{classItem.name}
-			</option>
-		{/each}
-	</select>
+	<Select items={classProp} bind:value={selectedClass} on:change={onClassChange} />
 
 	<h2 class="m-5 text-center">Activities</h2>
 	<div class="flex items-center justify-center gap-10">

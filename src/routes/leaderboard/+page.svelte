@@ -11,7 +11,6 @@
 	let isGlobal = false;
 
 	const onSubmit: SubmitFunction = ({ action, cancel }) => {
-		console.log(action.search);
 		if (action.search === '?/global') {
 			isGlobal = true;
 		} else if (action.search === '?/local') {

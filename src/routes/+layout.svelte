@@ -39,7 +39,7 @@
 <AppShell>
 	<svelte:fragment slot="header">
 		{#if !$page.url.pathname.startsWith('/login') && !$page.url.pathname.startsWith('/admin')}
-			<NavbarLayout name={data.user?.username ?? ''} id={data.user?.id ?? ''} />
+			<NavbarLayout username={data.user?.username ?? ''} id={data.user?.id ?? ''} />
 		{/if}
 	</svelte:fragment>
 	<slot />

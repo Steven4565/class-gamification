@@ -31,6 +31,7 @@ export async function load(event) {
 
 	const classIdParams = event.url.searchParams.get('classId');
 	if (classIdParams === null) throw redirect(300, `/user/${user.id}?classId=${classes[0].classId}`);
+
 	const classId = parseInt(classIdParams);
 	if (Number.isNaN(classId)) throw new Error('Invalid classId');
 

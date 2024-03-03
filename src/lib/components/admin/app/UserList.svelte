@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { User } from '@prisma/client';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { Card, Avatar } from 'flowbite-svelte';
 	import { PlusSolid } from 'flowbite-svelte-icons';
 
@@ -12,6 +12,12 @@
 	export let users: UserData[] | undefined;
 
 	const modalStore = getModalStore();
+
+	const modal: ModalSettings = {
+		type: 'component',
+		title: 'Add Users',
+		component: 'addUsersModal'
+	};
 </script>
 
 <div class="mx-auto flex flex-wrap gap-3">
@@ -28,7 +34,7 @@
 		padding="lg"
 		class="flex min-h-48 max-w-48 cursor-pointer items-center justify-center bg-gray-200 hover:bg-gray-300"
 		on:click={() => {
-			// TODO: show form modal
+			modalStore.trigger(modal);
 		}}
 	>
 		<PlusSolid class="size-1/3" />

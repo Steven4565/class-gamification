@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Prisma, UserActivities } from '@prisma/client';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { Card, Button } from 'flowbite-svelte';
 
 	interface UserData {
@@ -12,6 +13,14 @@
 	}> & { user: UserData };
 
 	export let activities: ActivitiesTypeWithoutUser[] | undefined;
+
+	const modalStore = getModalStore();
+
+	const modal: ModalSettings = {
+		type: 'component',
+		title: 'Delete Action',
+		component: 'deleteActionModal'
+	};
 </script>
 
 <div class="w-full">
@@ -25,12 +34,12 @@
 				<p class="text-md font-semibold text-gray-900 dark:text-white">
 					+{asg.actionType.experience}
 				</p>
-				<input type="hidden" name="asgId" />
-				<Button
-					color="red"
+				<button
+					class="variant-filled-error btn"
 					on:click={() => {
-						// TODO: add model
-					}}>Delete</Button
+						modal.meta = { actionId: asg.id };
+						modalStore.trigger(modal);
+					}}>Delete</button
 				>
 			</div>
 		</Card>

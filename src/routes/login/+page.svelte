@@ -7,7 +7,7 @@
 	<form use:enhance method="POST">
 		<div class="mb-6">
 			<label class="label">
-				<input class="input p-2" type="text" name="username" placeholder="Username" required />
+				<input class="input p-2" type="text" name="id" placeholder="ID" required />
 			</label>
 		</div>
 		<div class="mb-6">

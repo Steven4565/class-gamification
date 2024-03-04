@@ -3,7 +3,7 @@ import type { PageServerLoad } from '../$types';
 import prisma from '$lib/server/prisma';
 import type { ClassData } from '$lib/types/classData';
 
-export const load: PageServerLoad = async (event) => {
+export const load: PageServerLoad = async () => {
 	try {
 		const data = await prisma.class.findMany({
 			include: {
@@ -71,7 +71,6 @@ export const actions: Actions = {
 		const request = await event.request.formData();
 		const id = request.get('id');
 		const name = request.get('name');
-		const subject = request.get('subject');
 		const description = request.get('description');
 
 		if (

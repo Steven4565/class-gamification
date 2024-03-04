@@ -1,6 +1,6 @@
 import prisma from '$lib/server/prisma';
 import type { ActivityProp } from '$lib/types/activity.js';
-import { fail, type Actions, error } from '@sveltejs/kit';
+import { fail, type Actions, error, redirect } from '@sveltejs/kit';
 
 function getStartOfWeek() {
 	const date = new Date();
@@ -64,12 +64,20 @@ async function getQuotaMap(userId: string, classId: number) {
 }
 
 export async function load(event) {
+	try {
+		redirect(304, '/login');
+	} catch (e) {
+		if (e instanceof redirect) {
+			throw e;
+		}
+	}
+
 	const user = await prisma.user.findFirst({
 		where: { id: event.locals.user?.id },
 		include: { userClass: true }
 	});
 	if (!user) error(400, { message: 'User not found' });
-	if (!user.userClass.length) error(400, { message: 'User not found' });
+	if (!user.userClass.length) error(400, { message: 'User class not found' });
 
 	try {
 		const activityWithQuota = await getQuotaMap(user.id, user.userClass[0].classId);
@@ -112,32 +120,35 @@ export const actions: Actions = {
 		if (!action) return fail(400, { message: 'Action not found' });
 		if (!user) return fail(400, { message: 'User not found' });
 
-		await prisma.$transaction(async (prisma) => {
-			const quota = await prisma.userActivities.count({
-				where: {
-					userId: user.id,
-					actionTypeId: action.id,
-					classId: classId,
-					doneAt: {
-						gte: action.resetTime === 'weekly' ? getStartOfWeek() : getStartOfSemester()
+		try {
+			await prisma.$transaction(async (prisma) => {
+				const quota = await prisma.userActivities.count({
+					where: {
+						userId: user.id,
+						actionTypeId: action.id,
+						classId: classId,
+						doneAt: {
+							gte: action.resetTime === 'weekly' ? getStartOfWeek() : getStartOfSemester()
+						}
 					}
+				});
+
+				if (quota >= action.maxQuota) {
+					throw new Error('Quota exceeded');
 				}
+
+				await prisma.userActivities.create({
+					data: {
+						actionTypeId: action.id,
+						userId: user.id,
+						doneAt: new Date(),
+						classId: classId
+					}
+				});
 			});
-
-			if (quota >= action.maxQuota) {
-				return fail(400, { message: 'Quota exceeded' });
-			}
-
-			await prisma.userActivities.create({
-				data: {
-					actionTypeId: action.id,
-					userId: user.id,
-					doneAt: new Date(),
-					classId: classId
-				}
-			});
-		});
-
-		return { success: true };
+		} catch (e) {
+			console.error(e);
+			return fail(500, { message: 'Internal server error' });
+		}
 	}
 };

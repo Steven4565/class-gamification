@@ -53,7 +53,6 @@
 		modalStore.trigger(modal);
 	};
 
-	// Handle activity submit
 	const onFormSubmit: SubmitFunction = async () => {
 		modalStore.close();
 

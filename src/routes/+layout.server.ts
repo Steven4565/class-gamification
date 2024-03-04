@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 export function load(event) {
 	if (!event.locals.user) {
@@ -9,5 +9,9 @@ export function load(event) {
 	if (event.locals.user.role === 'admin') {
 		if (!event.url.pathname.startsWith('/admin')) throw redirect(301, '/admin');
 	}
-	return { user: event.locals.user };
+
+	const session = event.locals.session;
+	if (!session) throw error(401, 'Unauthorized');
+
+	return { user: event.locals.user, session };
 }

@@ -1,6 +1,7 @@
+import { lucia } from '$lib/server/auth';
 import prisma from '$lib/server/prisma';
 import type { ActivityProp } from '$lib/types/activity.js';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 
 function getStartOfWeek() {
 	const date = new Date();
@@ -134,5 +135,12 @@ export const actions: Actions = {
 		});
 
 		return { success: true };
+	},
+	logout: async (event) => {
+		if (!event.locals.session) return redirect(302, '/login');
+		// TODO: const [res, resError] = await errorHandler(lucia.invalidateSession(event.locals.session.id));
+		await lucia.invalidateSession(event.locals.session.id);
+		event.cookies.delete(lucia.sessionCookieName, { path: '.' });
+		return redirect(302, '/login');
 	}
 };

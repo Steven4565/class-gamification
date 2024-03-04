@@ -64,14 +64,6 @@ async function getQuotaMap(userId: string, classId: number) {
 }
 
 export async function load(event) {
-	try {
-		redirect(304, '/login');
-	} catch (e) {
-		if (e instanceof redirect) {
-			throw e;
-		}
-	}
-
 	const user = await prisma.user.findFirst({
 		where: { id: event.locals.user?.id },
 		include: { userClass: true }

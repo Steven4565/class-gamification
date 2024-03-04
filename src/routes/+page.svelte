@@ -78,7 +78,11 @@
 			const data = await response.json();
 			actions = data.activities;
 		} catch {
-			error(400, { message: 'Failed to fetch activities' });
+			const t = {
+				message: 'Failed to fetch actions',
+				background: 'variant-filled-error'
+			};
+			toastStore.trigger(t);
 		}
 	}
 </script>

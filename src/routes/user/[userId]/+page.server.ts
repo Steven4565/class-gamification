@@ -22,7 +22,6 @@ async function getClasses(userId: string) {
 
 export async function load(event) {
 	// load user
-
 	const [user, userError] = await errorHandler(
 		prisma.user.findFirst({
 			where: { id: event.params.userId },

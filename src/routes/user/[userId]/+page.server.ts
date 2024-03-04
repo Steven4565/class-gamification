@@ -1,3 +1,4 @@
+import { errorHandler } from '$lib/server/errorHandler';
 import prisma from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 
@@ -20,31 +21,33 @@ async function getClasses(userId: string) {
 }
 
 export async function load(event) {
-	let classUrl = '';
+	// load user
 
-	try {
-		// load user
-		const user = await prisma.user.findFirst({
+	const [user, userError] = await errorHandler(
+		prisma.user.findFirst({
 			where: { id: event.params.userId },
 			include: { userClass: true }
-		});
-		if (!user) throw Error('UserNotFound');
+		})
+	);
+	if (userError || !user) error(400, { message: 'User not found' });
 
-		// load classes
-		const { classes, classProp } = await getClasses(user.id);
-		if (!classes) throw Error('NoClassesJoined');
+	// load classes
+	const [classRes, classError] = await errorHandler(getClasses(user.id));
+	if (classError || !classRes) error(400, { message: 'No classes joined' });
+	const { classes, classProp } = classRes;
 
-		// redirect user to first class
-		const classIdParams = event.url.searchParams.get('classId');
-		classUrl = `/user/${user.id}?classId=${classes[0].classId}`;
-		if (classIdParams === null) throw Error('RedirectToFirstClass');
+	// redirect user to first class
+	const classIdParams = event.url.searchParams.get('classId');
+	const classUrl = `/user/${user.id}?classId=${classes[0].classId}`;
+	if (classIdParams === null) redirect(300, classUrl);
 
-		// check valid class ID
-		const classId = parseInt(classIdParams);
-		if (Number.isNaN(classId)) throw Error('InvalidClassId');
+	// check valid class ID
+	const classId = parseInt(classIdParams);
+	if (Number.isNaN(classId)) error(400, { message: 'Invalid classId' });
 
-		// load user activities
-		const userActivities = prisma.userActivities.findMany({
+	// load user activities
+	const [userActivities, userActivitiesError] = await errorHandler(
+		prisma.userActivities.findMany({
 			where: {
 				userId: user.id,
 				classId
@@ -52,13 +55,16 @@ export async function load(event) {
 			include: {
 				actionType: true
 			}
-		});
+		})
+	);
+	if (!userActivities || userActivitiesError) error(500, { message: 'Activities not found' });
 
-		const exp = (await userActivities).reduce((exp, { actionType }) => {
-			return exp + actionType.experience;
-		}, 0);
+	const exp = userActivities.reduce((exp, { actionType }) => {
+		return exp + actionType.experience;
+	}, 0);
 
-		const actions = await prisma.userActivities.findMany({
+	const [actions, actionsError] = await errorHandler(
+		prisma.userActivities.findMany({
 			where: {
 				userId: user.id,
 				classId
@@ -66,33 +72,14 @@ export async function load(event) {
 			include: {
 				actionType: true
 			}
-		});
+		})
+	);
+	if (!actions || actionsError) error(500, { message: 'Actions not found' });
 
-		return {
-			user: { ...event.locals.user, exp },
-			actions,
-			classProp,
-			classes
-		};
-	} catch (e) {
-		if (e instanceof Error)
-			switch (e.message) {
-				case 'UserNotFound':
-					error(400, { message: 'User not found' });
-					break;
-				case 'NoClassesJoined':
-					error(400, { message: 'No classes joined' });
-					break;
-				case 'RedirectToFirstClass':
-					redirect(300, classUrl);
-					break;
-				case 'InvalidClassId':
-					error(400, { message: 'Invalid classId' });
-					break;
-
-				default:
-					console.error(e);
-					error(500, { message: 'Internal server error' });
-			}
-	}
+	return {
+		user: { ...event.locals.user, exp },
+		actions,
+		classProp,
+		classes
+	};
 }

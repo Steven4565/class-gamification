@@ -139,21 +139,17 @@ export const actions: Actions = {
 		const request = await event.request.formData();
 		const id = request.get('asgId');
 
-		if (!id) {
-			return error(400, { message: 'Invalid Input.' });
-		}
+		if (!id) return fail(400, { message: 'Invalid Input.' });
 
-		try {
-			const res = await prisma.$transaction([
-				prisma.userActivities.delete({
-					where: {
-						id: Number(id)
-					}
-				})
-			]);
-			return { res };
-		} catch (error) {
-			return fail(500, { message: 'An error occured while deleting assignment.' });
-		}
+		const [res, resError] = await errorHandler(
+			prisma.userActivities.delete({
+				where: {
+					id: Number(id)
+				}
+			})
+		);
+		if (resError || !res)
+			return fail(500, { message: 'An error occured while removing assignment.' });
+		return { res };
 	}
 };

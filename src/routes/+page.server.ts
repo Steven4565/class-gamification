@@ -1,3 +1,4 @@
+import { lucia } from '$lib/server/auth';
 import prisma from '$lib/server/prisma';
 import type { ActivityProp } from '$lib/types/activity.js';
 import { fail, type Actions, error, redirect } from '@sveltejs/kit';
@@ -142,5 +143,12 @@ export const actions: Actions = {
 			console.error(e);
 			return fail(500, { message: 'Internal server error' });
 		}
+	},
+	logout: async (event) => {
+		if (!event.locals.session) return redirect(302, '/login');
+		// TODO: const [res, resError] = await errorHandler(lucia.invalidateSession(event.locals.session.id));
+		await lucia.invalidateSession(event.locals.session.id);
+		event.cookies.delete(lucia.sessionCookieName, { path: '.' });
+		return redirect(302, '/login');
 	}
 };

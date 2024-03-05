@@ -8,12 +8,12 @@ import prisma from '$lib/server/prisma';
 export const actions: Actions = {
 	default: async (event) => {
 		const formData = await event.request.formData();
-		const username = formData.get('username');
+		const id = formData.get('id');
 		const password = formData.get('password');
 
-		if (typeof username !== 'string') {
+		if (typeof id !== 'string') {
 			return fail(400, {
-				message: 'Invalid username'
+				message: 'Invalid id'
 			});
 		}
 		if (typeof password !== 'string') {
@@ -26,7 +26,7 @@ export const actions: Actions = {
 		try {
 			const existingUser = await prisma.user.findFirst({
 				where: {
-					id: username.toLowerCase()
+					id: id.toLowerCase()
 				}
 			});
 			if (!existingUser) {

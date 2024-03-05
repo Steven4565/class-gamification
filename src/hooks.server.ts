@@ -28,9 +28,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.user = user;
 	event.locals.session = session;
 
-	if (event.url.pathname.startsWith('/admin') && user?.role !== 'admin') {
-		redirect(302, '/');
-	}
+	if (event.url.pathname.startsWith('/admin') && user?.role !== 'admin') throw redirect(302, '/');
 
 	return resolve(event);
 };

@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { AppBar, Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
-	export let username: String;
-	export let id: String;
+	export let username: string;
+	export let id: string;
 
 	const popupAvatar: PopupSettings = {
 		event: 'click',
 		target: 'popupAvatar',
 		placement: 'bottom-start'
 	};
-
-	function signOut() {}
 </script>
 
 <AppBar>
@@ -33,7 +31,9 @@
 						<a href={'/user/' + id}>Profile</a>
 					</li>
 					<li>
-						<button on:click={signOut} class="w-full">Logout</button>
+						<form action="/?/logout" method="post">
+							<button type="submit" class="btn w-full">Logout</button>
+						</form>
 					</li>
 				</ul>
 			</nav>

@@ -1,5 +1,6 @@
+import { errorHandler } from '$lib/server/errorHandler';
 import prisma from '$lib/server/prisma';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 async function getClasses(userId: string) {
 	const classes = await prisma.userClass.findMany({
@@ -20,44 +21,59 @@ async function getClasses(userId: string) {
 }
 
 export async function load(event) {
-	const user = await prisma.user.findFirst({
-		where: { id: event.params.userId },
-		include: { userClass: true }
-	});
-	if (!user) throw new Error('User not found');
+	// load user
+	const [user, userError] = await errorHandler(
+		prisma.user.findFirst({
+			where: { id: event.params.userId },
+			include: { userClass: true }
+		})
+	);
+	if (userError || !user) error(400, { message: 'User not found' });
 
-	const { classes, classProp } = await getClasses(user.id);
-	if (!classes) throw new Error('User has not joined any classes');
+	// load classes
+	const [classRes, classError] = await errorHandler(getClasses(user.id));
+	if (classError || !classRes) error(400, { message: 'No classes joined' });
+	const { classes, classProp } = classRes;
 
+	// redirect user to first class
 	const classIdParams = event.url.searchParams.get('classId');
-	if (classIdParams === null) throw redirect(300, `/user/${user.id}?classId=${classes[0].classId}`);
+	const classUrl = `/user/${user.id}?classId=${classes[0].classId}`;
+	if (classIdParams === null) redirect(300, classUrl);
 
+	// check valid class ID
 	const classId = parseInt(classIdParams);
-	if (Number.isNaN(classId)) throw new Error('Invalid classId');
+	if (Number.isNaN(classId)) error(400, { message: 'Invalid classId' });
 
-	const userActivities = prisma.userActivities.findMany({
-		where: {
-			userId: user.id,
-			classId
-		},
-		include: {
-			actionType: true
-		}
-	});
+	// load user activities
+	const [userActivities, userActivitiesError] = await errorHandler(
+		prisma.userActivities.findMany({
+			where: {
+				userId: user.id,
+				classId
+			},
+			include: {
+				actionType: true
+			}
+		})
+	);
+	if (!userActivities || userActivitiesError) error(500, { message: 'Activities not found' });
 
-	const exp = (await userActivities).reduce((exp, { actionType }) => {
+	const exp = userActivities.reduce((exp, { actionType }) => {
 		return exp + actionType.experience;
 	}, 0);
 
-	const actions = await prisma.userActivities.findMany({
-		where: {
-			userId: user.id,
-			classId
-		},
-		include: {
-			actionType: true
-		}
-	});
+	const [actions, actionsError] = await errorHandler(
+		prisma.userActivities.findMany({
+			where: {
+				userId: user.id,
+				classId
+			},
+			include: {
+				actionType: true
+			}
+		})
+	);
+	if (!actions || actionsError) error(500, { message: 'Actions not found' });
 
 	return {
 		user: { ...event.locals.user, exp },

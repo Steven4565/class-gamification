@@ -2,7 +2,7 @@
 	import ActionButton from '$lib/components/ActionButton.svelte';
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import { error, type SubmitFunction } from '@sveltejs/kit';
 
 	export let data;
 	let {
@@ -53,7 +53,6 @@
 		modalStore.trigger(modal);
 	};
 
-	// Handle activity submit
 	const onFormSubmit: SubmitFunction = async () => {
 		modalStore.close();
 
@@ -79,7 +78,11 @@
 			const data = await response.json();
 			actions = data.activities;
 		} catch {
-			throw new Error('Failed to fetch activities');
+			const t = {
+				message: 'Failed to fetch actions',
+				background: 'variant-filled-error'
+			};
+			toastStore.trigger(t);
 		}
 	}
 </script>

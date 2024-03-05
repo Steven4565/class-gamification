@@ -2,6 +2,9 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UserActivitiyList from '$lib/components/actionList/UserActivitiyList.svelte';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
 
 	export let data;
 	let { user, classes } = data;
@@ -28,7 +31,11 @@
 			$page.url.searchParams.set('classId', selectedClass);
 			goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 		} catch {
-			throw new Error('Failed to fetch user actions');
+			const t: ToastSettings = {
+				message: 'Failed to fetch actions',
+				background: 'variant-filled-error'
+			};
+			toastStore.trigger(t);
 		}
 	}
 </script>

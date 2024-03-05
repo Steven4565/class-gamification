@@ -1,6 +1,6 @@
 import prisma from '$lib/server/prisma.js';
 import type { ActivityProp } from '$lib/types/activity';
-import { error, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 
 async function getActions(userId: string, classId: number) {
 	const userActions = await prisma.userActivities.findMany({
@@ -41,7 +41,7 @@ export const GET = async ({ url }) => {
 	const classId = url.searchParams.get('classId');
 
 	if (!userId || !classId || Number.isNaN(parseInt(classId))) {
-		return error(400, 'Invalid request');
+		throw new Error('Invalid parameters');
 	}
 
 	const actionWithQuota = await getQuotaMap(userId, parseInt(classId));

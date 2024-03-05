@@ -28,9 +28,9 @@ export const actions: Actions = {
 			}
 		});
 		if (!existingUser) {
-			return fail(400, {
+			return {
 				message: 'Incorrect username or password'
-			});
+			};
 		}
 
 		const validPassword = await new Argon2id().verify(existingUser.password, password);

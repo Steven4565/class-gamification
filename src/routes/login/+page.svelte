@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	export let form;
 </script>
 
 <div class="mx-auto w-[80vw] pt-10">
@@ -15,6 +16,9 @@
 				<input class="input p-2" name="password" type="password" placeholder="Password" required />
 			</label>
 		</div>
+		{#if form?.message}
+			<span class="text-red-500">{form?.message}</span>
+		{/if}
 
 		<button type="submit" class="variant-filled btn w-full">Log in</button>
 	</form>

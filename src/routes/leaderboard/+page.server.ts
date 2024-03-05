@@ -1,3 +1,4 @@
+import { errorHandler } from '$lib/server/errorHandler';
 import prisma from '$lib/server/prisma.js';
 import { fail, type Actions } from '@sveltejs/kit';
 
@@ -7,11 +8,14 @@ async function getLocal() {
 }
 
 async function getGlobal() {
-	const userActivitiesWithPoints = await prisma.userActivities.findMany({
-		include: {
-			actionType: true
-		}
-	});
+	const [userActivitiesWithPoints, pointsError] = await errorHandler(
+		prisma.userActivities.findMany({
+			include: {
+				actionType: true
+			}
+		})
+	);
+	if (!userActivitiesWithPoints || pointsError) throw pointsError;
 
 	const totalPointsPerUser = userActivitiesWithPoints.reduce(
 		(acc, activity) => {
@@ -37,17 +41,22 @@ async function getGlobal() {
 }
 
 export async function load() {
-	const leaderboard = await getGlobal();
+	const [leaderboard, leaderboardError] = await errorHandler(getGlobal());
+	if (!leaderboard || leaderboardError) return fail(500, { message: 'Failed to get leaderboard' });
 	return { leaderboard };
 }
 
 export const actions: Actions = {
 	global: async () => {
-		const leaderboard = await getGlobal();
+		const [leaderboard, leaderboardError] = await errorHandler(getGlobal());
+		if (!leaderboard || leaderboardError)
+			return fail(500, { message: 'Failed to get leaderboard' });
 		return { leaderboard };
 	},
 	local: async () => {
-		const leaderboard = await getLocal();
+		const [leaderboard, leaderboardError] = await errorHandler(getLocal());
+		if (!leaderboard || leaderboardError)
+			return fail(500, { message: 'Failed to get leaderboard' });
 		return { leaderboard };
 	}
 };

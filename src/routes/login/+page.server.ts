@@ -22,32 +22,43 @@ export const actions: Actions = {
 			});
 		}
 
-		const existingUser = await prisma.user.findFirst({
-			where: {
-				id: username.toLowerCase()
+		let isAdmin = false;
+		try {
+			const existingUser = await prisma.user.findFirst({
+				where: {
+					id: username.toLowerCase()
+				}
+			});
+			if (!existingUser) {
+				return fail(400, {
+					message: 'Incorrect username or password'
+				});
 			}
-		});
-		if (!existingUser) {
-			return fail(400, {
-				message: 'Incorrect username or password'
+
+			const validPassword = await new Argon2id().verify(existingUser.password, password);
+			if (!validPassword) {
+				return fail(400, {
+					message: 'Incorrect username or password'
+				});
+			}
+
+			const session = await lucia.createSession(existingUser.id, {});
+			const sessionCookie = lucia.createSessionCookie(session.id);
+			event.cookies.set(sessionCookie.name, sessionCookie.value, {
+				path: '.',
+				...sessionCookie.attributes
+			});
+
+			if (existingUser.role === 'admin') isAdmin = true;
+			isAdmin = false;
+		} catch (e) {
+			console.error(e);
+			return fail(500, {
+				message: 'Internal server error'
 			});
 		}
 
-		const validPassword = await new Argon2id().verify(existingUser.password, password);
-		if (!validPassword) {
-			return fail(400, {
-				message: 'Incorrect username or password'
-			});
-		}
-
-		const session = await lucia.createSession(existingUser.id, {});
-		const sessionCookie = lucia.createSessionCookie(session.id);
-		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
-
-		if (existingUser.role === 'admin') throw redirect(302, '/admin');
-		else throw redirect(302, '/');
+		if (isAdmin) redirect(302, '/admin');
+		else redirect(302, '/');
 	}
 };

@@ -1,8 +1,9 @@
-import prisma from '$lib/server/prisma.js';
 import { fail, type Actions, redirect } from '@sveltejs/kit';
-import { Argon2id } from 'oslo/password';
+import { errorHandler, errorHandlerSync } from '$lib/server/errorHandler';
 
 import { z } from 'zod';
+import { Argon2id } from 'oslo/password';
+import prisma from '$lib/server/prisma';
 
 const ChangePasswordSchema = z
 	.object({
@@ -33,14 +34,10 @@ export const actions: Actions = {
 	default: async (event) => {
 		const formData = Object.fromEntries(await event.request.formData());
 
-		console.log(formData);
-
-		// TODO: add error handling
-		try {
-			const { username, password, confirmPassword } = ChangePasswordSchema.parse(formData);
-		} catch (e) {
-			if (e instanceof z.ZodError) {
-				const { fieldErrors: errors } = e.flatten();
+		const [res, resError] = errorHandlerSync(() => ChangePasswordSchema.parse(formData));
+		if (!res || resError) {
+			if (resError instanceof z.ZodError) {
+				const { fieldErrors: errors } = resError.flatten();
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { password, confirmPassword, ...rest } = formData;
 
@@ -48,28 +45,26 @@ export const actions: Actions = {
 					data: rest,
 					errors
 				};
-			}
+			} else return fail(400, { message: 'Invalid request' });
 		}
 
-		// if (!event.locals.user) return fail(401, { message: 'Unauthorized' });
+		const { password, username } = res;
+		if (!event.locals.user) return fail(401, { message: 'Unauthorized' });
 
-		// if (!password || password !== confirmPassword)
-		// 	return fail(400, { message: 'Passwords do not match' });
+		const hashedPassword = await new Argon2id().hash(password);
 
-		// if (!username) return fail(400, { message: 'Invalid username' });
-
-		// const hashedPassword = await new Argon2id().hash(password);
-
-		// // TODO: error handling
-		// await prisma.user.update({
-		// 	where: {
-		// 		id: event.locals.user.id
-		// 	},
-		// 	data: {
-		// 		password: hashedPassword,
-		// 		username
-		// 	}
-		// });
+		const userRes = await errorHandler(
+			prisma.user.update({
+				where: {
+					id: event.locals.user.id
+				},
+				data: {
+					password: hashedPassword,
+					username
+				}
+			})
+		);
+		if (userRes[1]) return fail(500, { message: 'Internal server error' });
 
 		redirect(302, '/');
 	}

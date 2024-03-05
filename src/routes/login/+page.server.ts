@@ -26,7 +26,7 @@ export const actions: Actions = {
 		try {
 			const existingUser = await prisma.user.findFirst({
 				where: {
-					id: username.toLowerCase()
+					id: id.toLowerCase()
 				}
 			});
 			if (!existingUser) {

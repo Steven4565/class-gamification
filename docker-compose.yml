@@ -8,10 +8,22 @@ services:
     ports:
       - '3307:3306'
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: levelling-system
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: 'mysql://${DB_USER}:${DB_PASSWORD}@db/${DB_NAME}'
+      ORIGIN: http://localhost:3000
+    depends_on:
+      - db
 
 volumes:
   my-db:

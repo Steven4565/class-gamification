@@ -23,6 +23,5 @@ COPY start.sh .
 EXPOSE 3000
 
 COPY prisma/ ./prisma/
-# COPY tsconfig.json .
 
 CMD npx --no-install prisma db push && npm run db:seed && node build 

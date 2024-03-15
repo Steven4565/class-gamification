@@ -13,7 +13,7 @@ services:
       MYSQL_ROOT_USER: ${DB_USER}
   app:
     build: .
-    image: levelling-system
+    image: steven4565/class-gamification
     ports:
       - '3000:3000'
     environment:

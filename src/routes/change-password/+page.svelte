@@ -19,7 +19,7 @@
 					name="username"
 					placeholder="Username"
 					required
-					value={form?.data?.username}
+					value={form?.data?.username ?? ''}
 				/>
 				{#if form?.errors?.username}
 					<span class="text-red-500">{form?.errors?.username[0]}</span>

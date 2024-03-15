@@ -4,14 +4,24 @@ services:
   db:
     image: mysql:5.7
     volumes:
-      - my-db:/var/lib/mysql
+      - db-vol:/var/lib/mysql
     ports:
       - '3307:3306'
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_USER: ${DB_USER}
+  app:
+    build: .
+    image: steven4565/class-gamification
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      ORIGIN: http://localhost:3000
+      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db/${DB_NAME}
+    depends_on:
+      - db
 
 volumes:
-  my-db:
+  db-vol:

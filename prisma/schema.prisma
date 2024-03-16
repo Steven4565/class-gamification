@@ -47,8 +47,6 @@ model UserActivities {
   user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   actionType ActivityType @relation(fields: [actionTypeId], references: [id], onDelete: Cascade)
   class      Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, actionTypeId, doneAt])
 }
 
 model Title {
@@ -69,6 +67,6 @@ model UserClass {
   id      Int    @id @default(autoincrement())
   userId  String
   classId Int
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
 }

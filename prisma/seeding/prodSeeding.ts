@@ -73,7 +73,7 @@ const activity: Prisma.ActivityTypeCreateInput[] = [
 	{
 		name: 'midExam',
 		experience: 10,
-		description: 'Attetnd the mid exam',
+		description: 'Attend the mid exam',
 		maxQuota: 1,
 		resetTime: 'semester'
 	},
@@ -139,13 +139,14 @@ async function insertActvities() {
 }
 
 async function insertUsers() {
+	const argon = new Argon2id();
 	await prisma.user.upsert({
 		where: { id: 'admin1' },
 		update: {},
 		create: {
 			id: 'admin1',
 			username: 'adminSteven',
-			password: await new Argon2id().hash('steven is an admin'),
+			password: await argon.hash('steven is an admin'),
 			role: 'admin'
 		}
 	});
@@ -156,19 +157,20 @@ async function insertUsers() {
 		create: {
 			id: 'admin2',
 			username: 'adminAndry',
-			password: await new Argon2id().hash('I love sir andry'),
+			password: await argon.hash('I love sir andry'),
 			role: 'admin'
 		}
 	});
 
-	const data = userList.map((user) => {
+	const dataAsync = userList.map(async (user) => {
 		return {
 			id: user.nim.toString(),
 			username: user.name,
-			password: user.nim.toString(),
+			password: await argon.hash(user.nim.toString()),
 			role: 'user'
 		};
 	});
+	const data = await Promise.all(dataAsync);
 
 	await prisma.user.createMany({ data });
 }

@@ -5,9 +5,11 @@
 		getModalStore,
 		popup,
 		type ModalSettings,
-		type PopupSettings
+		type PopupSettings,
+		Avatar
 	} from '@skeletonlabs/skeleton';
-	import { DotsVerticalSolid } from 'flowbite-svelte-icons';
+	import { DotsVerticalSolid, UsersGroupSolid } from 'flowbite-svelte-icons';
+	import { ActivitySelected } from '$lib/stores/admin/activitySelected';
 
 	export let classData: ClassData;
 	export let index: number;
@@ -48,32 +50,61 @@
 		target: 'popupClassButtonOption-' + index,
 		placement: 'bottom'
 	};
+
+	const cButton = 'font-inter font-medium text-sm bg-white px-5 py-1.5 w-full shadow-md';
+	const cButtonHeaderFont = 'font-poppins text-white truncate w-full';
 </script>
 
+
 <button
-	class="card relative flex min-h-60 min-w-60 max-w-60 cursor-pointer items-center justify-center hover:bg-gray-200"
-	on:click={() => goto(`/admin/class/${classData.id}`)}
+	class="relative rounded-xl overflow-hidden shadow-md h-44 w-64 flex flex-col justify-start items-start m-auto hover:bg-slate-200"
+	on:click={() => {
+		$ActivitySelected = true;
+		goto(`/admin/class/${classData.id}`)
+	}}
 >
-	<div class="absolute right-7 top-7">
+	<div class="bg-brightAzure flex w-full p-3 pb-1.5">
+		<div class="w-7/12 flex flex-col items-start text-left">
+			<p class="{cButtonHeaderFont} font-extrabold text-xl">{classData.name}</p>
+			<p class="{cButtonHeaderFont} font-light text-sm">{classData.description}</p>
+		</div>
+	</div>
+	<div class="p-3 ">
+		<p class="font-poppins font-light text-sm">{classData.userCount} members</p>
+	</div>
+
+	<Avatar
+		class="absolute right-8 top-8"
+		src="https://placehold.co/200"
+	/>
+
+	<div class="absolute right-0 top-2">
 		<button
 			use:popup={popupClick}
 			on:click={(event) => {
 				event.stopPropagation();
 			}}
 		>
-			<DotsVerticalSolid size="lg" />
+			<DotsVerticalSolid size="xl" class="focus:outline-none" color="#FFFFFF"/>
 		</button>
 
 		<div data-popup={'popupClassButtonOption-' + index}>
-			<div>
-				<button on:click={onEdit}> Edit </button>
-				<button on:click={onDelete} class="text-red-500"> Delete </button>
+			<div class="flex flex-col items-center rounded-lg">
+				<button on:click={onEdit} class="{cButton} rounded-t-lg">Edit</button>
+				<div class="h-px w-full bg-brightAzure"/>
+				<button on:click={onDelete} class="{cButton} rounded-b-lg text-crimson">Delete</button>
 			</div>
 		</div>
 	</div>
-	<div class="flex flex-col items-center text-center">
-		<h5 class="mb-1 text-2xl font-medium text-gray-900 dark:text-white">{classData.name}</h5>
-		<span class="text-md text-gray-500 dark:text-gray-400">{classData.description}</span>
-		<span class="text-md text-gray-500 dark:text-gray-400">{classData.userCount} members</span>
-	</div>
+
+	<UsersGroupSolid 
+		size="xl" 
+		color="#000000" 
+		class="absolute bottom-3 right-3 opacity-25"
+		on:click={(event) => {
+			event.stopPropagation();
+			$ActivitySelected = false;
+			goto(`/admin/class/${classData.id}`);
+		}}
+	/>
 </button>

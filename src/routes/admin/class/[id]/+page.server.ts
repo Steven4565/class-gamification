@@ -2,9 +2,14 @@ import { error, fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import prisma from '$lib/server/prisma';
 import { Argon2id } from 'oslo/password';
+import { request } from 'http';
 
 export const load: PageServerLoad = async (event) => {
 	const id = event.params.id;
+
+	const now = new Date();
+	const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 	try {
 		const res = await prisma.class.findUnique({
 			where: {
@@ -22,6 +27,12 @@ export const load: PageServerLoad = async (event) => {
 					}
 				},
 				UserActivities: {
+					where: {
+						doneAt: {
+							gte: startOfDay,
+							lte: endOfDay
+						},
+					},
 					include: {
 						actionType: true,
 						user: {
@@ -29,7 +40,7 @@ export const load: PageServerLoad = async (event) => {
 								id: true,
 								username: true
 							}
-						}
+						},
 					}
 				}
 			}
@@ -47,7 +58,7 @@ export const actions: Actions = {
 		const studentId = request.get('studentId');
 
 		if (!studentId) {
-			return error(400, { message: 'Invalid Input.' });
+			return fail(400, { message: 'Invalid Input.' });
 		}
 
 		const studentIdArr = studentId.toString().split(/\W+/);
@@ -124,17 +135,42 @@ export const actions: Actions = {
 			return fail(500, { message: 'An error occured while adding students.' });
 		}
 	},
+	removeUser: async (event) => {
+		const request = await event.request.formData();
+		const id = request.get('id');
+		console.log(id);
+
+		if (!id) {
+			return fail(400, { message: 'Invalid Input.' });
+		}
+
+		try {
+
+			const res = await prisma.$transaction([
+				prisma.userClass.delete({
+					where: {
+						id: Number(id)
+					}
+				})
+			]);
+
+			return { res };
+		} catch (error) {
+			return fail(500, { message: 'An error occured while deleting assignment.' });
+		}
+
+	},
 	removeAsg: async (event) => {
 		const request = await event.request.formData();
 		const id = request.get('asgId');
 
 		if (!id) {
-			return error(400, { message: 'Invalid Input.' });
+			return fail(400, { message: 'Invalid Input.' });
 		}
 
 		try {
 			const res = await prisma.$transaction([
-				prisma.userActivities.delete({
+				prisma.userActivities.deleteMany({
 					where: {
 						id: Number(id)
 					}

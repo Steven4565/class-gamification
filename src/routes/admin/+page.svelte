@@ -1,10 +1,18 @@
 <script lang="ts">
-	import { CirclePlusOutline } from 'flowbite-svelte-icons';
+	import { GridPlusSolid } from 'flowbite-svelte-icons';
 	import type { PageData } from './$types';
 	import ClassButton from '$lib/components/admin/ClassButton.svelte';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
 	export let data: PageData;
+
+	let classList = data.res;
+	let search = '';
+	$: {
+		if (data.res) {
+			classList = data.res.filter((classData) => classData.name.toLowerCase().includes(search.toLowerCase()));
+		}
+	}
 
 	const modalStore = getModalStore();
 
@@ -18,17 +26,20 @@
 	};
 </script>
 
-<div class="flex w-full flex-wrap justify-evenly gap-6">
-	{#each data.res || [] as classData, i}
-		<ClassButton {classData} index={i} />
-	{/each}
-
-	<button
-		class="card flex min-h-60 min-w-60 max-w-60 cursor-pointer items-center justify-center bg-gray-200 hover:bg-gray-300"
-		on:click={() => {
-			modalStore.trigger(createModal);
-		}}
-	>
-		<CirclePlusOutline class="size-16 opacity-70" />
-	</button>
+<div class="flex flex-col items-center w-11/12 m-auto gap-8 justify-center">
+	<div class="flex w-full items-center gap-x-2">
+		<input bind:value={search} placeholder="Search here..." class="w-full font-poppins font-medium p-2 rounded-lg bg-silver drop-shadow-lg shadow-inner focus:outline-none bg-opacity-45"/>
+		<GridPlusSolid 
+			color="silver"
+			class="focus:outline-none cursor-pointer size-9"
+			on:click={() => {
+				modalStore.trigger(createModal);
+			}}
+		/>
+	</div>
+	<div class="grid button-grid gap-5 w-full">
+		{#each classList || [] as classData, i}
+			<ClassButton {classData} index={i}/>
+		{/each}	
+	</div>
 </div>

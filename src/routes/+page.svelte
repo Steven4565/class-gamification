@@ -87,15 +87,15 @@
 	}
 </script>
 
-<div>
+<div class="mx-auto max-w-[80%]">
 	<select bind:value={selectedClass} on:change={onClassChange}>
 		{#each classProp as _class}
 			<option value={_class.value}>{_class.name}</option>
 		{/each}
 	</select>
 
-	<h2 class="m-5 text-center">Activities</h2>
-	<div class="flex items-center justify-center gap-10">
+	<h2 class="h2 m-5 text-center">Activities</h2>
+	<div class="flex w-full flex-wrap items-center justify-center gap-10">
 		{#if activities}
 			{#each activities as activity}
 				<ActionButton action={activity} on:actionClicked={onActionClicked} />
@@ -103,8 +103,8 @@
 		{/if}
 	</div>
 
-	<h2 class="m-5 text-center">Quests</h2>
-	<div class="flex items-center justify-center gap-10">
+	<h2 class="h2 m-5 text-center">Quests</h2>
+	<div class="flex max-w-full flex-wrap items-center justify-center gap-10">
 		{#if quests}
 			{#each quests as quest}
 				<ActionButton action={quest} on:actionClicked={onActionClicked} />

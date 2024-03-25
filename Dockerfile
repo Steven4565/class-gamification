@@ -19,9 +19,8 @@ WORKDIR /app
 COPY --from=builder /app/build build/
 COPY --from=builder /app/node_modules node_modules/
 COPY package.json .
-COPY start.sh .
 EXPOSE 3000
 
 COPY prisma/ ./prisma/
 
-CMD npx --no-install prisma db push && npm run db:seed && node build 
+CMD npx prisma migrate deploy && npm run db:seed && node build 

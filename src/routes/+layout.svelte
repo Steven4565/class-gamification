@@ -1,9 +1,7 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { AppShell, Modal, type ModalComponent, Toast } from '@skeletonlabs/skeleton';
-	import NavbarLayout from '$lib/components/NavbarLayout.svelte';
+	import { Modal, type ModalComponent, Toast } from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	import { page } from '$app/stores';
 
 	// Popup settings
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -26,8 +24,6 @@
 		addUsersModal: { ref: AddUsersModal },
 		deleteActionModal: { ref: DeleteActionModal }
 	};
-
-	export let data;
 </script>
 
 <!-- This div is used to remove the warning that these components does not have parents -->

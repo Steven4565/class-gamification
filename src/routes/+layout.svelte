@@ -36,11 +36,4 @@
 	<Toast />
 </div>
 
-<AppShell>
-	<svelte:fragment slot="header">
-		{#if !$page.url.pathname.startsWith('/login') && !$page.url.pathname.startsWith('/admin')}
-			<NavbarLayout username={data.user?.username ?? ''} id={data.user?.id ?? ''} />
-		{/if}
-	</svelte:fragment>
-	<slot />
-</AppShell>
+<slot />

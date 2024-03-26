@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { goto, invalidate } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UserActivitiyList from '$lib/components/actionList/UserActivitiyList.svelte';
-	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { Avatar, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
 	const toastStore = getToastStore();
 
@@ -43,7 +43,7 @@
 <section class="mx-auto w-[900px]">
 	<div class=" flex items-center">
 		<div class="m-7 h-max">
-			<img class="rounded-full" src="https://placekitten.com/200/200" alt="" />
+			<Avatar initials="US" />
 		</div>
 		<div>
 			<h1 class="h1 mb-3">{user.username}</h1>

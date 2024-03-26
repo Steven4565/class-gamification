@@ -1,3 +1,4 @@
+import { errorHandler } from '$lib/server/errorHandler.js';
 import prisma from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import { Argon2id } from 'oslo/password';
@@ -34,5 +35,27 @@ export async function load(event) {
 	else if (!isDefaultPassword && event.url.pathname.startsWith('/change-password'))
 		redirect(302, '/');
 
-	return { user: event.locals.user, session };
+	const [classData, classError] = await errorHandler(
+		prisma.userClass.findMany({
+			where: {
+				userId: user.id
+			},
+			include: {
+				class: true
+			}
+		})
+	);
+	if (classError) {
+		console.error(classError);
+		error(500, { message: 'Internal server error' });
+	}
+
+	const classes = classData?.map((c) => {
+		return {
+			classId: c.classId,
+			name: c.class.name
+		};
+	});
+
+	return { user: event.locals.user, session, classes };
 }

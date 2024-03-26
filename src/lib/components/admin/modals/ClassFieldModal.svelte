@@ -5,14 +5,15 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { CloseSolid } from 'flowbite-svelte-icons';
 	import type { SvelteComponent } from 'svelte';
-	
+
 	export let parent: SvelteComponent;
 
 	const toastStore = getToastStore();
 	const modalStore = getModalStore();
 
-	const selectedData = $modalStore[0]?.meta?.selectedData;
-	const action = selectedData ? classActions.edit : classActions.create;
+	$: selectedData = $modalStore[0]?.meta?.selectedData;
+	$: action = selectedData ? classActions.edit : classActions.create;
+	$: console.log(selectedData);
 
 	const formProps = {
 		[classActions.create]: {
@@ -26,11 +27,10 @@
 	};
 
 	const formControl: SubmitFunction = () => {
+		const pastTense = action === classActions.create ? 'created' : 'updated';
 		modalStore.close();
 
 		return async ({ result, update }) => {
-			const pastTense = action === classActions.create ? 'created' : 'updated';
-
 			if (result.type === 'success') {
 				const t: ToastSettings = {
 					message: `Class has been ${pastTense}`,
@@ -49,45 +49,50 @@
 		};
 	};
 
-	const cFormFont = 'font-poppins font-medium text-sm dark:text-white cursor-default'
-	const cFormInput = 'input bg-silvers ml-1 px-2 py-1 drop-shadow-md shadow-inner border-none rounded-md font-poppins font-medium text-sm'
+	const cFormFont = 'font-poppins font-medium text-sm dark:text-white cursor-default';
+	const cFormInput =
+		'input bg-silvers ml-1 px-2 py-1 drop-shadow-md shadow-inner border-none rounded-md font-poppins font-medium text-sm';
 </script>
 
 {#if $modalStore[0]}
-	<div class="bg-lavenderMist drop-shadow-md shadow-inner rounded-lg p-2 w-full max-w-lg">
-		<div class="flex justify-end w-full">
-			<CloseSolid strokeWidth="4" class="w-6 cursor-pointer focus:outline-none" on:click={parent.onClose}/>
+	<div class="w-full max-w-lg rounded-lg bg-lavenderMist p-2 shadow-inner drop-shadow-md">
+		<div class="flex w-full justify-end">
+			<CloseSolid
+				strokeWidth="4"
+				class="w-6 cursor-pointer focus:outline-none"
+				on:click={parent.onClose}
+			/>
 		</div>
-		<div class="flex flex-col items-center mx-12">
-			<h3 class="text-xl font-poppins font-bold dark:text-white cursor-default">
+		<div class="mx-12 flex flex-col items-center">
+			<h3 class="cursor-default font-poppins text-xl font-bold dark:text-white">
 				{formProps[action].label} CLASS
 			</h3>
 			<form
-				class="flex flex-col space-y-6 w-full mb-4"
+				class="mb-4 flex w-full flex-col space-y-6"
 				method="POST"
 				action={formProps[action].formUrl}
 				use:enhance={formControl}
 			>
 				<input type="hidden" name="id" value={selectedData?.id} />
 				<div class="form-grid">
-					<span class="{cFormFont}">Name</span>
+					<span class={cFormFont}>Name</span>
 					<label class="justify-left label flex items-center">
 						<input
 							type="text"
 							name="name"
 							required
-							class="{cFormInput}"
+							class={cFormInput}
 							color="base"
 							maxlength="13"
 							value={selectedData?.name ?? ''}
 						/>
 					</label>
-					<span class="{cFormFont}">Description</span>
+					<span class={cFormFont}>Description</span>
 					<label class="justify-left label flex items-center">
 						<input
 							type="text"
 							name="description"
-							class="{cFormInput}"
+							class={cFormInput}
 							color="base"
 							maxlength="19"
 							value={selectedData?.description ?? ''}
@@ -96,7 +101,7 @@
 				</div>
 				<button
 					type="submit"
-					class="w-1/3 py-3 rounded-full bg-electricCyan font-poppins font-semibold text-xs text-white mx-auto bg-opacity-90 hover:bg-opacity-100"
+					class="mx-auto w-1/3 rounded-full bg-electricCyan bg-opacity-90 py-3 font-poppins text-xs font-semibold text-white hover:bg-opacity-100"
 					color="none">DONE</button
 				>
 			</form>

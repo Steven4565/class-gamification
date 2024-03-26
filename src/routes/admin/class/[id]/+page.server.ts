@@ -31,7 +31,7 @@ export const load: PageServerLoad = async (event) => {
 						doneAt: {
 							gte: startOfDay,
 							lte: endOfDay
-						},
+						}
 					},
 					include: {
 						actionType: true,
@@ -40,7 +40,7 @@ export const load: PageServerLoad = async (event) => {
 								id: true,
 								username: true
 							}
-						},
+						}
 					}
 				}
 			}
@@ -138,14 +138,12 @@ export const actions: Actions = {
 	removeUser: async (event) => {
 		const request = await event.request.formData();
 		const id = request.get('id');
-		console.log(id);
 
 		if (!id) {
 			return fail(400, { message: 'Invalid Input.' });
 		}
 
 		try {
-
 			const res = await prisma.$transaction([
 				prisma.userClass.delete({
 					where: {
@@ -158,7 +156,6 @@ export const actions: Actions = {
 		} catch (error) {
 			return fail(500, { message: 'An error occured while deleting assignment.' });
 		}
-
 	},
 	removeAsg: async (event) => {
 		const request = await event.request.formData();

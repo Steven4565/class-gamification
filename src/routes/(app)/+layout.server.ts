@@ -16,12 +16,12 @@ export const load = async ({ locals }) => {
 			}
 		})
 	);
-	if (classError) {
+	if (!classData || classError) {
 		console.error(classError);
 		error(500, { message: 'Internal server error' });
 	}
 
-	const classes = classData?.map((c) => {
+	const classes = classData.map((c) => {
 		return {
 			classId: c.classId,
 			name: c.class.name

@@ -11,7 +11,7 @@
 	};
 </script>
 
-<AppBar>
+<AppBar shadow="shadow-lg">
 	<svelte:fragment slot="lead">
 		<a href="/" class="bg-initial btn px-3">Home</a>
 		<a href="/leaderboard" class="bg-initial btn px-3">Leaderboard</a>

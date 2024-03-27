@@ -7,8 +7,7 @@ export async function load(event) {
 	// TODO: Please clean this up. This is a mess
 
 	if (event.url.pathname.startsWith('/login')) return;
-
-	if (!event.locals.user) redirect(302, '/');
+	if (!event.locals.user) redirect(302, '/login');
 
 	if (event.url.pathname.startsWith('/admin')) {
 		if (event.locals.user.role !== 'admin') redirect(301, '/');

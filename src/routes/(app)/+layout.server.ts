@@ -2,7 +2,8 @@ import { errorHandler } from '$lib/server/errorHandler';
 import prisma from '$lib/server/prisma';
 import { error } from '@sveltejs/kit';
 
-export const load = async ({ locals }) => {
+export const load = async ({ locals, url }) => {
+	if (url.pathname.startsWith('/login')) return;
 	const user = locals.user;
 	if (!user) error(401, { message: 'Unauthorized' });
 

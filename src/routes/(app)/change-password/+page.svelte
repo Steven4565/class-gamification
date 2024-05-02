@@ -26,7 +26,7 @@
 				{/if}
 			</label>
 			<label class="label">
-				<input class={inputClass} type="text" name="password" placeholder="Password" required />
+				<input class={inputClass} type="password" name="password" placeholder="Password" required />
 				{#if form?.errors?.password}
 					<span class="text-red-500">{form?.errors?.password[0]}</span>
 				{/if}
@@ -34,7 +34,7 @@
 			<label class="label">
 				<input
 					class={inputClass}
-					type="text"
+					type="password"
 					name="confirmPassword"
 					placeholder="Confirm Password"
 					required

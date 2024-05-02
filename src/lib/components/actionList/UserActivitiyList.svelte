@@ -21,7 +21,7 @@
 
 <div>
 	{#each actionList as action}
-		<div class="my-3 flex bg-gray-300 p-3">
+		<div class="my-3 flex rounded-xl p-3 outline outline-1 outline-surface-700">
 			<div class="w-24">
 				<h2 class="h2 text-green-500"><b>+{action.actionType.experience}</b></h2>
 			</div>

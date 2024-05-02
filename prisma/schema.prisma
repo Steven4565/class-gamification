@@ -70,3 +70,10 @@ model UserClass {
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
+
+model Level {
+  id         Int    @id @default(autoincrement())
+  level      Int
+  levelName  String
+  experience Int
+}

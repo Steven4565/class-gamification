@@ -1,13 +1,14 @@
 <script lang="ts">
 	import ActionButton from '$lib/components/ActionButton.svelte';
+	import selectedClassStore from '$lib/stores/selectedClassStore.js';
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { error, type SubmitFunction } from '@sveltejs/kit';
+	import { get } from 'svelte/store';
 
 	export let data;
 	let {
 		props: { actions },
-		classes,
 		userId
 	} = data;
 
@@ -29,15 +30,6 @@
 	};
 
 	let selectedAction: ActivityProp | null = null;
-
-	let selectedClass = classes[0].classId.toString();
-	const classProp = classes.map((c) => {
-		return {
-			value: c.classId.toString(),
-			name: c.class.name
-		};
-	});
-
 	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
 		selectedAction = event.detail.action;
 
@@ -46,7 +38,7 @@
 			component: 'confirmModal',
 			meta: {
 				selectedAction,
-				selectedClass,
+				selectedClass: get(selectedClassStore),
 				onFormSubmit
 			}
 		};
@@ -72,9 +64,13 @@
 		};
 	};
 
-	async function onClassChange() {
+	selectedClassStore.subscribe((value) => {
+		onClassChange(value);
+	});
+
+	async function onClassChange(classId: number) {
 		try {
-			const response = await fetch(`/api/getActivities?classId=${selectedClass}&userId=${userId}`);
+			const response = await fetch(`/api/getActivities?classId=${classId}&userId=${userId}`);
 			const data = await response.json();
 			actions = data.activities;
 		} catch {
@@ -87,28 +83,25 @@
 	}
 </script>
 
-<div class="mx-auto max-w-[80%]">
-	<select bind:value={selectedClass} on:change={onClassChange}>
-		{#each classProp as _class}
-			<option value={_class.value}>{_class.name}</option>
-		{/each}
-	</select>
-
-	<h2 class="h2 m-5 text-center">Activities</h2>
-	<div class="flex w-full flex-wrap items-center justify-center gap-10">
-		{#if activities}
-			{#each activities as activity}
-				<ActionButton action={activity} on:actionClicked={onActionClicked} />
-			{/each}
-		{/if}
+<div class="mx-auto grid max-w-[80%] gap-10">
+	<div>
+		<h2 class="h2 m-5 text-2xl font-bold">ACTIVITIES</h2>
+		<div class="flex w-full flex-wrap items-center gap-10">
+			{#if activities}
+				{#each activities as activity}
+					<ActionButton action={activity} on:actionClicked={onActionClicked} />
+				{/each}
+			{/if}
+		</div>
 	</div>
-
-	<h2 class="h2 m-5 text-center">Quests</h2>
-	<div class="flex max-w-full flex-wrap items-center justify-center gap-10">
-		{#if quests}
-			{#each quests as quest}
-				<ActionButton action={quest} on:actionClicked={onActionClicked} />
-			{/each}
-		{/if}
+	<div>
+		<h2 class="h2 m-5 text-2xl font-bold">QUESTS</h2>
+		<div class="flex max-w-full flex-wrap items-center gap-10">
+			{#if quests}
+				{#each quests as quest}
+					<ActionButton action={quest} on:actionClicked={onActionClicked} />
+				{/each}
+			{/if}
+		</div>
 	</div>
 </div>

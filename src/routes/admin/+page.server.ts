@@ -1,10 +1,9 @@
 import { fail, type Actions, error } from '@sveltejs/kit';
-import type { PageServerLoad } from '../$types';
 import prisma from '$lib/server/prisma';
 import type { ClassData } from '$lib/types/classData';
 import { errorHandler } from '$lib/server/errorHandler';
 
-export const load: PageServerLoad = async () => {
+export const load = async () => {
 	const [data, dataError] = await errorHandler(
 		prisma.class.findMany({
 			include: {

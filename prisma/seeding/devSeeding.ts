@@ -107,11 +107,41 @@ async function insertUsers() {
 	}
 }
 
+async function insertLevels() {
+	interface Level {
+		level: number;
+		experience: number;
+		levelName: string;
+	}
+	const levels: Level[] = [
+		{
+			level: 1,
+			experience: 0,
+			levelName: 'Beginner'
+		},
+		{
+			level: 2,
+			experience: 100,
+			levelName: 'Intermediate'
+		},
+		{
+			level: 3,
+			experience: 200,
+			levelName: 'Advanced'
+		}
+	];
+
+	await prisma.level.createMany({
+		data: levels
+	});
+}
+
 async function main() {
 	await insertTitles();
 	await insertActvities();
 	await insertClass();
 	await insertUsers();
+	await insertLevels();
 
 	await prisma.userClass.createMany({
 		data: [
@@ -126,7 +156,6 @@ async function main() {
 		data: [
 			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-21') },
 			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') }
-			// { userId: 'user', classId: 1, actionTypeId: 5, doneAt: new Date('2022-01-03') }
 		]
 	});
 }

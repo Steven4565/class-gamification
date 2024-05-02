@@ -1,5 +1,6 @@
 import { errorHandler } from '$lib/server/errorHandler';
 import prisma from '$lib/server/prisma';
+import type { Level } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';
 
 async function getClasses(userId: string) {
@@ -18,6 +19,22 @@ async function getClasses(userId: string) {
 		};
 	});
 	return { classes, classProp };
+}
+
+function calculateCurrentLevel(levels: Level[], exp: number) {
+	let currExp = exp;
+	let currentLevel = 0;
+	levels.forEach((level, i) => {
+		if (currExp >= level.experience) {
+			currExp -= level.experience;
+			currentLevel = i;
+		}
+	});
+
+	return {
+		level: currentLevel,
+		exp: currExp
+	};
 }
 
 export async function load(event) {
@@ -58,10 +75,12 @@ export async function load(event) {
 	);
 	if (!userActivities || userActivitiesError) error(500, { message: 'Activities not found' });
 
+	// calculate experience
 	const exp = userActivities.reduce((exp, { actionType }) => {
 		return exp + actionType.experience;
 	}, 0);
 
+	// get user actions
 	const [actions, actionsError] = await errorHandler(
 		prisma.userActivities.findMany({
 			where: {
@@ -75,10 +94,22 @@ export async function load(event) {
 	);
 	if (!actions || actionsError) error(500, { message: 'Actions not found' });
 
+	// get current level
+	const [levels, levelsError] = await errorHandler(
+		prisma.level.findMany({
+			orderBy: {
+				experience: 'desc'
+			}
+		})
+	);
+	if (!levels || levelsError) error(500, { message: 'Levels not found' });
+
+	const { level: currLevelIdx, exp: currExp } = calculateCurrentLevel(levels, exp);
+
 	return {
 		user: { ...event.locals.user, exp },
 		actions,
-		classProp,
-		classes
+		currentLevel: levels[currLevelIdx],
+		currExp
 	};
 }

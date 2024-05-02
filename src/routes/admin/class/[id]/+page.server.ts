@@ -126,8 +126,8 @@ export const actions: Actions = {
 		const distinctUserIdsNotInClass = distinctData.filter(
 			(id) => !userClass.some((student) => student.userId === id)
 		);
-
-			filterStudentId.forEach(async (idStudent) => {
+		try {
+			distinctUserIdsNotInClass.forEach(async (idStudent) => {
 				if (typeof idStudent === 'string') {
 					idStudent = idStudent.trim();
 					if (idStudent) {

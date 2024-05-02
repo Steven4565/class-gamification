@@ -59,7 +59,7 @@
 			<div class="flex items-center justify-center gap-3">
 				<ProgressBar
 					label="Progress Bar"
-					value={user.exp / 100}
+					value={user.exp}
 					max={100}
 					height="h-5"
 					track="bg-surface-600"

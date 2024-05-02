@@ -13,7 +13,23 @@ const config = {
 		join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')
 	],
 	theme: {
-		extend: {}
+		extend: {
+			fontFamily: {
+				'poppins': ['Poppins'],
+				'inter': ['Inter']
+			},
+			colors: {
+				'customBlue': '#277BC0',
+				'sunrise': '#FFB200',
+				'silver': '#E6E5E9',
+				'lavenderMist': '#EFECF8',
+				'crimson': '#F60000',
+				'slateLavender':  '#766D76',
+				'brightAzure': '#0097DA',
+				'electricCyan': '#00BCF1',
+				'sunriseOrange': '#F78627'
+			}
+		}
 	},
 	plugins: [
 		skeleton({

@@ -2,6 +2,10 @@
 	import { enhance } from '$app/forms';
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { CloseSolid } from 'flowbite-svelte-icons';
+	import type { SvelteComponent } from 'svelte';
+
+	export let parent: SvelteComponent;
 
 	const toastStore = getToastStore();
 	const modalStore = getModalStore();
@@ -27,15 +31,22 @@
 			await update();
 		};
 	};
+
+	const cButton = 'font-poppins font-bold text-white px-3.5 py-1.5 rounded-xl'
 </script>
 
 {#if $modalStore[0]}
-	<form class="flex flex-col space-y-3" method="POST" action="?/addStudent" use:enhance={onSubmit}>
-		<h3 class="mb-2 text-xl font-medium text-gray-900 dark:text-white">Add Student</h3>
-		<label class="space-y-2">
-			<span>NIM</span>
-			<textarea name="studentId" rows="3" class="flex h-fit text-wrap" />
-		</label>
-		<button type="submit" class="w-full1 variant-filled btn">Add</button>
-	</form>
+	<div class="flex flex-col items-center bg-white drop-shadow-md shadow-md rounded-lg p-3.5 pb-6 w-full max-w-lg">
+		<div class="flex justify-end w-full">
+			<CloseSolid strokeWidth="4" class="w-6 cursor-pointer focus:outline-none" on:click={parent.onClose}/>
+		</div>
+		<form class="flex flex-col items-center justify-center w-10/12 gap-y-5" method="post" action="?/addStudent" use:enhance={onSubmit}>
+			<p class="font-poppins font-bold text-xl">ADD STUDENT</p>
+			<textarea class="w-full bg-[#00BCF1] bg-opacity-10 font-poppins p-3.5 rounded-md" name="studentId" rows="5" placeholder="Input NIM" />
+			<div class="flex justify-evenly w-full">
+				<button class="{cButton} bg-sunriseOrange bg-opacity-75" disabled>UPLOAD</button>
+				<button type="submit" class="{cButton} bg-electricCyan">SUMBIT</button>
+			</div>
+		</form>
+	</div>
 {/if}

@@ -11,9 +11,16 @@ body {
 @layer components {
 	.form-grid {
 		display: grid;
-		grid-template-columns: auto auto minmax(0, 1fr);
+		grid-template-columns: auto minmax(0, 1fr);
 		row-gap: 1rem;
 		column-gap: 0.5rem;
 		align-items: center;
+	}
+	.button-grid {
+		grid-template-columns: repeat(auto-fit, minmax(16em, 1fr));
+	}
+
+	.button-user-grid {
+		grid-template-columns: repeat(auto-fit, minmax(11em, 1fr));
 	}
 }

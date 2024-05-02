@@ -1,14 +1,24 @@
 <script lang="ts">
-	import type { User } from '@prisma/client';
-	import { Avatar, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { PlusSolid } from 'flowbite-svelte-icons';
+	import { Avatar, getModalStore, type ModalSettings, type PopupSettings, popup } from '@skeletonlabs/skeleton';
+	import { AngleLeftOutline, DotsVerticalSolid } from 'flowbite-svelte-icons';
+	import { ActivitySelected } from '$lib/stores/admin/activitySelected';
+	import UserButton from '$lib/components/admin/UserButton.svelte';
+	import { Prisma } from '@prisma/client';
 
-	interface UserData {
-		id: string;
-		username: string;
-	}
+	type UserData = Prisma.UserClassGetPayload<{
+		include: { 
+			user:  {
+				select: {
+					id: true,
+					username: true
+				}
+			}
+		};
+	}>
 
 	export let users: UserData[] | undefined;
+	export let name: String | undefined;
+	export let description: String | undefined;
 
 	const modalStore = getModalStore();
 
@@ -17,24 +27,46 @@
 		title: 'Add Users',
 		component: 'addUsersModal'
 	};
+
 </script>
 
-<div class="mx-auto flex flex-wrap gap-3">
-	{#each users || [] as user}
-		<a class="card flex min-h-48 min-w-48 max-w-48 justify-center hover:bg-gray-200" href="./">
-			<div class="flex flex-col items-center">
-				<Avatar class="mb-3" src="/images/profile-picture-3.webp" alt="user profile" />
-				<h5 class="text-xl font-medium text-gray-900 dark:text-white">{user.id}</h5>
-			</div>
-		</a>
-	{/each}
-
-	<button
-		class=" card flex min-h-48 max-w-48 cursor-pointer items-center justify-center bg-gray-200 hover:bg-gray-300"
+<div class="px-3">
+	<AngleLeftOutline 
+		size="xl"
+		color="#766D76"
+		class="w-fit cursor-pointer mb-5"
 		on:click={() => {
-			modalStore.trigger(modal);
+			$ActivitySelected=true;
 		}}
-	>
-		<PlusSolid class="size-1/3" />
-	</button>
+	/>
+	<div class="flex flex-col w-11/12 mx-auto gap-y-5">
+		<div class="flex justify-between items-center w-full">
+			<div class="flex items-center gap-3">
+				<Avatar
+					src="https://placehold.co/200"
+					width="w-28"
+				/>
+				<div>
+					<p class="font-poppins font-bold text-xl">{name}</p>
+					<p class="font-poppins">{description}</p>
+					<p class="font-poppins text-sunriseOrange text-sm">{users?.length} members</p>
+				</div>
+			</div>
+			<button
+				class="font-poppins font-bold text-xs text-white bg-electricCyan h-fit py-3.5 px-6 rounded-lg"
+				on:click={() => {
+					modalStore.trigger(modal);
+				}}
+			>
+				Add Student
+			</button>
+		</div>
+	
+		<div class="grid button-user-grid gap-3 w-full place-items-center">
+			{#each users || [] as user, i}
+				<UserButton user={user} index={i}/>
+			{/each}
+		</div>
+	</div>
 </div>
+

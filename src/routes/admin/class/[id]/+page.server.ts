@@ -2,11 +2,16 @@ import { error, fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import prisma from '$lib/server/prisma';
 import { Argon2id } from 'oslo/password';
+import { request } from 'http';
 import { errorHandler } from '$lib/server/errorHandler';
 import type { Prisma } from '@prisma/client';
 
 export const load: PageServerLoad = async (event) => {
 	const id = event.params.id;
+
+	const now = new Date();
+	const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 	const [res, resError] = await errorHandler(
 		prisma.class.findUnique({
 			where: {
@@ -24,6 +29,12 @@ export const load: PageServerLoad = async (event) => {
 					}
 				},
 				UserActivities: {
+					where: {
+						doneAt: {
+							gte: startOfDay,
+							lte: endOfDay
+						}
+					},
 					include: {
 						actionType: true,
 						user: {
@@ -116,24 +127,47 @@ export const actions: Actions = {
 			(id) => !userClass.some((student) => student.userId === id)
 		);
 
-		// Add already existing students to the class
+			filterStudentId.forEach(async (idStudent) => {
+				if (typeof idStudent === 'string') {
+					idStudent = idStudent.trim();
+					if (idStudent) {
+						await prisma.$transaction([
+							prisma.userClass.create({
+								data: {
+									userId: idStudent.toString(),
+									classId: Number(id)
+								}
+							})
+						]);
+					}
+				}
+			});
+			return { message: 'Students added successfully.' };
+		} catch (error) {
+			return fail(500, { message: 'An error occured while adding students.' });
+		}
+	},
+	removeUser: async (event) => {
+		const request = await event.request.formData();
+		const id = request.get('id');
 
-		const studentData2 = distinctUserIdsNotInClass.map((idStudent) => {
-			idStudent = idStudent.trim();
-			return {
-				userId: idStudent,
-				classId: Number(id)
-			};
-		});
-		const createRes2 = await errorHandler(
-			prisma.userClass.createMany({
-				data: studentData2
-			})
-		);
+		if (!id) {
+			return fail(400, { message: 'Invalid Input.' });
+		}
 
-		if (createRes2[1]) return fail(500, { message: 'An error occured while adding student.' });
+		try {
+			const res = await prisma.$transaction([
+				prisma.userClass.delete({
+					where: {
+						id: Number(id)
+					}
+				})
+			]);
 
-		return { message: 'Students added successfully.' };
+			return { res };
+		} catch (error) {
+			return fail(500, { message: 'An error occured while deleting assignment.' });
+		}
 	},
 	removeAsg: async (event) => {
 		const request = await event.request.formData();

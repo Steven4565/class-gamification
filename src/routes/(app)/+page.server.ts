@@ -39,7 +39,11 @@ function getActivityResetDate(resetTime: string) {
 async function getQuotaMap(userId: string, classId: number) {
 	const userActivities = await getActivities(userId, classId);
 
-	const activities = await prisma.activityType.findMany();
+	const activities = await prisma.activityType.findMany({
+		include: {
+			group: true
+		}
+	});
 	if (!activities) error(400, { message: 'No activities found' });
 
 	const activitiesMap: Record<number, number> = userActivities.reduce(
@@ -85,9 +89,7 @@ export async function load(event) {
 		});
 
 		return {
-			props: {
-				actions: activityWithQuota
-			},
+			actions: activityWithQuota,
 			classes,
 			userId: user.id
 		};

@@ -3,14 +3,11 @@
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { error, type SubmitFunction } from '@sveltejs/kit';
+	import { type SubmitFunction } from '@sveltejs/kit';
 	import { get } from 'svelte/store';
 
 	export let data;
-	let {
-		props: { actions },
-		userId
-	} = data;
+	let { actions, userId } = data;
 
 	$: quests = actions.filter((action) => action.resetTime === 'semester');
 	$: activities = actions.filter((action) => action.resetTime === 'weekly');
@@ -33,15 +30,24 @@
 	const onActionClicked = (event: CustomEvent<{ action: ActivityProp }>) => {
 		selectedAction = event.detail.action;
 
-		const modal: ModalSettings = {
-			type: 'component',
-			component: 'confirmModal',
-			meta: {
-				selectedAction,
-				selectedClass: get(selectedClassStore),
-				onFormSubmit
-			}
-		};
+		let modal: ModalSettings;
+		if (selectedAction.group.name == 'imageSemester') {
+			modal = {
+				type: 'component',
+				component: 'imageModal'
+			};
+		} else {
+			modal = {
+				type: 'component',
+				component: 'confirmModal',
+				meta: {
+					selectedAction,
+					selectedClass: get(selectedClassStore),
+					onFormSubmit
+				}
+			};
+		}
+
 		modalStore.trigger(modal);
 	};
 

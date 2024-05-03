@@ -4,7 +4,6 @@
 	import UserActivitiyList from '$lib/components/actionList/UserActivitiyList.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
 	import { Avatar, getToastStore, ProgressBar, type ToastSettings } from '@skeletonlabs/skeleton';
-	import { get } from 'svelte/store';
 
 	const toastStore = getToastStore();
 

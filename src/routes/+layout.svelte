@@ -20,16 +20,16 @@
 	import ClassFieldModal from '$lib/components/admin/modals/ClassFieldModal.svelte';
 	import AddUsersModal from '$lib/components/admin/modals/AddUsersModal.svelte';
 	import DeleteActionModal from '$lib/components/admin/modals/DeleteActionModal.svelte';
-	import AdminNavbarLayout from '$lib/components/admin/AdminNavbarLayout.svelte';
 	import RemoveUserModal from '$lib/components/admin/modals/RemoveUserModal.svelte';
-	import NavbarLayout from '$lib/components/NavbarLayout.svelte';
+	import ImageModal from '$lib/components/modals/ImageModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
 		confirmModal: { ref: ConfirmModal },
 		removeClassModal: { ref: RemoveClassModal },
 		classFieldModal: { ref: ClassFieldModal },
 		addUsersModal: { ref: AddUsersModal },
 		deleteActionModal: { ref: DeleteActionModal },
-		removeUserModal: { ref: RemoveUserModal }
+		removeUserModal: { ref: RemoveUserModal },
+		imageModal: { ref: ImageModal }
 	};
 </script>
 

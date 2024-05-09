@@ -34,7 +34,8 @@
 		if (selectedAction.group.name == 'imageSemester') {
 			modal = {
 				type: 'component',
-				component: 'imageModal'
+				component: 'imageModal',
+				response: (r: boolean | undefined) => console.log('response:', r)
 			};
 		} else {
 			modal = {

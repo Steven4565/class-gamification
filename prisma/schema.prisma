@@ -53,6 +53,7 @@ model UserActivities {
   actionTypeId Int
   classId      Int
   doneAt       DateTime @default(now())
+  valid        Boolean  @default(true)
 
   user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   actionType             ActivityType             @relation(fields: [actionTypeId], references: [id], onDelete: Cascade)

@@ -9,7 +9,7 @@
 		"db:reset": "prisma migrate reset --force",
 		"db:seed": "prisma migrate reset --force && tsx prisma/seeding/seed.ts",
 		"db:push": "prisma db push",
-		"db:migrate": "prisma migrate reset --force && prisma migrate dev && tsx prisma/seed.ts",
+		"db:migrate": "prisma migrate reset --force && prisma migrate dev && tsx prisma/seeding/seed.ts",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

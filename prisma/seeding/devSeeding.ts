@@ -68,7 +68,7 @@ async function insertActivities() {
 			name: 'submitCert',
 			experience: 10,
 			description: 'Submitting an ML certificate',
-			maxQuota: 1,
+			maxQuota: 100,
 			resetTime: 'semester',
 			activityGroupId: groups.IMAGE_SEMESTER
 		},
@@ -181,7 +181,7 @@ async function insertAttributes() {
 		}
 	];
 
-	prisma.attribute.createMany({
+	await prisma.attribute.createMany({
 		data: input
 	});
 }

@@ -35,7 +35,11 @@
 			modal = {
 				type: 'component',
 				component: 'imageModal',
-				response: (r: boolean | undefined) => console.log('response:', r)
+				meta: {
+					selectedAction,
+					selectedClass: get(selectedClassStore),
+					onFormSubmit
+				}
 			};
 		} else {
 			modal = {
@@ -64,7 +68,7 @@
 					}
 				});
 				toastStore.trigger(successToast);
-			} else if (result.type === 'error') {
+			} else if (result.type === 'failure') {
 				toastStore.trigger(failToast);
 			}
 			await update();

@@ -1,17 +1,26 @@
 version: '3.1'
 
 services:
-  db:
-    image: mysql:5.7
-    volumes:
-      - my-db:/var/lib/mysql
-    ports:
-      - '3306:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+  # db:
+  #   image: mysql:5.7
+  #   volumes:
+  #     - my-db:/var/lib/mysql
+  #   ports:
+  #     - '3306:3306'
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpassword
+  #     MYSQL_DATABASE: mydatabase
+  #     MYSQL_USER: myuser
+  #     MYSQL_PASSWORD: mypassword
+  storage:
+    build: 
+      context: ./storage
+      dockerfile: Dockerfile
+    ports: 
+      - 80:80
+    volumes: 
+      - storage-vol:/var/lib/app
 
 volumes:
   my-db:
+  storage-vol:

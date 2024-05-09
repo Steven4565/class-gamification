@@ -16,7 +16,11 @@ async function getActions(userId: string, classId: number) {
 async function getQuotaMap(userId: string, classId: number) {
 	const userActions = await getActions(userId, classId);
 
-	const activities = await prisma.activityType.findMany();
+	const activities = await prisma.activityType.findMany({
+		include: {
+			group: true
+		}
+	});
 	const activitiesMap: Record<number, number> = userActions.reduce(
 		(quotaMap: Record<number, number>, { actionTypeId }) => {
 			if (!quotaMap[actionTypeId]) quotaMap[actionTypeId] = 1;

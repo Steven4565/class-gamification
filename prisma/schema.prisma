@@ -25,16 +25,26 @@ model Session {
   user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
+model ActivityGroup {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  ActivityType ActivityType[]
+}
+
 model ActivityType {
-  id           Int              @id @default(autoincrement())
-  name         String           @unique
-  description  String
-  experience   Int
-  maxQuota     Int // Only used when resetTime is "weekly"
-  resetTime    String // Values being either "weekly" or "semester"
-  titleId      Int?
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+  experience  Int
+  maxQuota    Int // Only used when resetTime is "weekly"
+  resetTime   String // Values being either "weekly" or "semester"
+
   userActivity UserActivities[]
-  title        Title?           @relation(fields: [titleId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  activityGroupId Int
+  group           ActivityGroup @relation(fields: [activityGroupId], references: [id])
+  titleId         Int?
+  title           Title?        @relation(fields: [titleId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 model UserActivities {
@@ -43,10 +53,29 @@ model UserActivities {
   actionTypeId Int
   classId      Int
   doneAt       DateTime @default(now())
+  valid        Boolean  @default(true)
 
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  actionType ActivityType @relation(fields: [actionTypeId], references: [id], onDelete: Cascade)
-  class      Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actionType             ActivityType             @relation(fields: [actionTypeId], references: [id], onDelete: Cascade)
+  class                  Class                    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  ActivityAttributeValue ActivityAttributeValue[]
+}
+
+model Attribute {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique
+  ActivityAttributeValue ActivityAttributeValue[]
+}
+
+model ActivityAttributeValue {
+  value Json
+
+  activity         UserActivities @relation(fields: [userActivitiesId], references: [id])
+  attribute        Attribute      @relation(fields: [attributeId], references: [id])
+  userActivitiesId Int
+  attributeId      Int
+
+  @@id([userActivitiesId])
 }
 
 model Title {

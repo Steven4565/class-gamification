@@ -3,43 +3,12 @@ import { Argon2id } from 'oslo/password';
 import { Prisma } from '@prisma/client';
 const prisma = new PrismaClient();
 
-const activity: Prisma.ActivityTypeCreateInput[] = [
-	{
-		name: 'attendance',
-		experience: 10,
-		description: 'Attendance in class',
-		maxQuota: 1,
-		resetTime: 'weekly'
-	},
-	{
-		name: 'answerQuestion',
-		experience: 2,
-		description: 'Answering Questions in Class',
-		maxQuota: 3,
-		resetTime: 'weekly'
-	},
-	{
-		name: 'replyForum',
-		experience: 2,
-		description: 'Replying in the forum',
-		maxQuota: 3,
-		resetTime: 'weekly'
-	},
-	{
-		name: 'submitWeeklyAsg',
-		experience: 10,
-		description: 'Submitting weekly assignments',
-		maxQuota: 1,
-		resetTime: 'weekly'
-	},
-	{
-		name: 'submitProject',
-		experience: 50,
-		description: 'Submitting a project',
-		maxQuota: 1,
-		resetTime: 'semester'
-	}
-];
+enum groups {
+	// This cannot start from 0 because Prisma will automatically insert it as 1 for some reason
+	WEEKLY = 1,
+	SEMESTER,
+	IMAGE_SEMESTER
+}
 
 async function insertClass() {
 	const classes = ['LA02', 'LB02', 'LC02'];
@@ -69,13 +38,52 @@ async function insertTitles() {
 	}
 }
 
-async function insertActvities() {
-	activity.forEach(async (action) => {
-		await prisma.activityType.upsert({
-			where: { name: action.name },
-			update: {},
-			create: action
-		});
+async function insertActivities() {
+	const activity: Prisma.ActivityTypeCreateManyInput[] = [
+		{
+			name: 'attendance',
+			experience: 10,
+			description: 'Attendance in class',
+			maxQuota: 1,
+			resetTime: 'weekly',
+			activityGroupId: groups.WEEKLY
+		},
+		{
+			name: 'answerQuestion',
+			experience: 2,
+			description: 'Answering Questions in Class',
+			maxQuota: 3,
+			resetTime: 'weekly',
+			activityGroupId: groups.WEEKLY
+		},
+		{
+			name: 'replyForum',
+			experience: 2,
+			description: 'Replying in the forum',
+			maxQuota: 3,
+			resetTime: 'weekly',
+			activityGroupId: groups.WEEKLY
+		},
+		{
+			name: 'submitCert',
+			experience: 10,
+			description: 'Submitting an ML certificate',
+			maxQuota: 1,
+			resetTime: 'semester',
+			activityGroupId: groups.IMAGE_SEMESTER
+		},
+		{
+			name: 'submitProject',
+			experience: 50,
+			description: 'Submitting a project',
+			maxQuota: 1,
+			resetTime: 'semester',
+			activityGroupId: groups.SEMESTER
+		}
+	];
+
+	await prisma.activityType.createMany({
+		data: activity
 	});
 }
 
@@ -136,12 +144,58 @@ async function insertLevels() {
 	});
 }
 
+async function insertGroups() {
+	interface Group {
+		id: number;
+		name: string;
+	}
+
+	const input: Group[] = [
+		{
+			id: groups.WEEKLY,
+			name: 'weekly'
+		},
+		{
+			id: groups.SEMESTER,
+			name: 'semester'
+		},
+		{
+			id: groups.IMAGE_SEMESTER,
+			name: 'imageSemester'
+		}
+	];
+
+	await prisma.activityGroup.createMany({
+		data: input
+	});
+}
+
+async function insertAttributes() {
+	interface Attribute {
+		name: string;
+	}
+
+	const input: Attribute[] = [
+		{
+			name: 'url'
+		}
+	];
+
+	prisma.attribute.createMany({
+		data: input
+	});
+}
+
 async function main() {
+	await insertGroups();
+	await insertAttributes();
+	await insertActivities();
+
 	await insertTitles();
-	await insertActvities();
+	await insertLevels();
+
 	await insertClass();
 	await insertUsers();
-	await insertLevels();
 
 	await prisma.userClass.createMany({
 		data: [

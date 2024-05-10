@@ -4,14 +4,18 @@
 	import Pagination from '$lib/components/admin/verificationTable/Pagination.svelte';
 	import RowsPerPage from '$lib/components/admin/verificationTable/RowsPerPage.svelte';
 	import { studentActivityDownloadExcel } from '$lib/utils/exportToExcel';
-	import { popup } from '@skeletonlabs/skeleton';
-	import type { PopupSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore, getToastStore, popup } from '@skeletonlabs/skeleton';
+	import type { ModalSettings, PopupSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import type { RowTableUserActivity, TableUserActivity } from '$lib/types/verificationTable';
+	import { unknown } from 'zod';
 
 	let checkedStates: { [key: number]: boolean } = {};
 
 	export let userAct: TableUserActivity[];
+
+	const modalStore = getModalStore();
+	const toastStore = getToastStore();
 
 	const userList: RowTableUserActivity[] = userAct.map((item) => {
 		const mappedItem: RowTableUserActivity = {
@@ -61,6 +65,42 @@
 		target: 'popupFeatured',
 		placement: 'bottom'
 	};
+
+	function extractValue(input: unknown): string[] | undefined {
+		// Check if input is an array
+		if (Array.isArray(input)) {
+			let values: string[] = [];
+
+			for (const item of input) {
+				// Check if the item is an object and has a property 'value' of type string
+				if (typeof item === 'object' && item !== null && 'value' in item) {
+					const value = (item as { value: unknown }).value;
+					if (typeof value === 'string') {
+						values.push(value);
+					}
+				}
+			}
+
+			return values.length > 0 ? values : undefined;
+		}
+		return undefined;
+	}
+
+	function onShowImageProof(value: unknown) {
+		const processed = extractValue(value);
+		if (!processed) throw new Error('Failed fetching url');
+
+		const url = processed[0];
+		const modal: ModalSettings = {
+			type: 'component',
+			title: 'Check Url Proof',
+			component: 'showUrlModal',
+			meta: {
+				url
+			}
+		};
+		modalStore.trigger(modal);
+	}
 </script>
 
 <div>
@@ -182,8 +222,7 @@
 								<button
 									class="anchor"
 									on:click={() => {
-										// TODO: show modal of proof
-										console.log(row.proof);
+										onShowImageProof(row.proof);
 									}}
 								>
 									Proof

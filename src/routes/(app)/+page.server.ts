@@ -173,6 +173,7 @@ export const actions: Actions = {
 
 				if (quota >= action.maxQuota) throw new Error('Quota exceeded');
 
+				// TODO: This is terrible. Don't do this. There's no authentication for the url. Please create a proper image server.
 				if (action.group.name == 'imageSemester') {
 					if (!url) throw new Error('Missing url parameter');
 

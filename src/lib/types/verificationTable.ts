@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 
+// TODO: I don't like how the there's no static typing for the attributes. But this is for future me to fix
 export const userActivityQuery = {
 	include: {
 		actionType: {

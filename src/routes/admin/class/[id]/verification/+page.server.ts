@@ -1,29 +1,21 @@
-import type { PageServerLoad } from "../$types";
+import type { PageServerLoad } from '../$types';
 import prisma from '$lib/server/prisma';
+import { userActivityQuery } from '$lib/types/verificationTable';
+import type { TableUserActivity } from '$lib/types/verificationTable';
 
 export const load: PageServerLoad = async (event) => {
-    const id = event.params.id;
+	const id = event.params.id;
 
-    const res = await prisma.userActivities.findMany({
-        where: {
-            classId: Number(id)
-        },
-        include: {
-            actionType: true,
-            user: {
-                select: {
-                    id: true,
-                    username: true
-                }
-            },
-            class: {
-                select: {
-                    id: true,
-                    name: true,
-                    description: true
-                }
-            }
-        }
-    });
-    return { userActivities: res };
+	const res: TableUserActivity[] = await prisma.userActivities.findMany({
+		where: {
+			classId: Number(id)
+		},
+		...userActivityQuery
+	});
+
+	// console.log(res[2].attributeMap);
+	// res.map((r) => r.attributeMap.values());
+	// console.log(JSON.stringify(res, null, 2));
+
+	return { userActivities: res };
 };

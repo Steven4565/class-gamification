@@ -6,97 +6,53 @@ import userList from './userList';
 
 const prisma = new PrismaClient();
 
-const activity: Prisma.ActivityTypeCreateInput[] = [
+enum groups {
+	// This cannot start from 0 because Prisma will automatically insert it as 1 for some reason
+	WEEKLY = 1,
+	SEMESTER,
+	IMAGE_SEMESTER
+}
+
+const activity: Prisma.ActivityTypeCreateManyInput[] = [
 	{
 		name: 'attendance',
 		experience: 10,
 		description: 'Attendance in class',
 		maxQuota: 1,
-		resetTime: 'weekly'
+		resetTime: 'weekly',
+		activityGroupId: groups.WEEKLY
 	},
 	{
 		name: 'answerQuestion',
 		experience: 2,
 		description: 'Answering Questions in Class',
 		maxQuota: 3,
-		resetTime: 'weekly'
-	},
-	{
-		name: 'answer3Questions',
-		experience: 10,
-		description: 'Answering 3 Questions in Class',
-		maxQuota: 1,
-		resetTime: 'weekly'
+		resetTime: 'weekly',
+		activityGroupId: groups.WEEKLY
 	},
 	{
 		name: 'replyForum',
 		experience: 2,
 		description: 'Replying in the forum',
 		maxQuota: 3,
-		resetTime: 'weekly'
+		resetTime: 'weekly',
+		activityGroupId: groups.WEEKLY
 	},
 	{
-		name: 'submitWeeklyAsg',
+		name: 'submitCert',
 		experience: 10,
-		description: 'Submitting weekly assignments',
+		description: 'Submitting an ML certificate',
 		maxQuota: 1,
-		resetTime: 'weekly'
-	},
-	{
-		name: 'finishGivenCourse',
-		experience: 50,
-		description: 'Finish the given course related to machine learning',
-		maxQuota: 1,
-		resetTime: 'semester'
-	},
-	{
-		name: 'finishAdditionalCourse',
-		experience: 100,
-		description: 'Finish 1 additional course related to machine learning',
-		maxQuota: 1,
-		resetTime: 'semester'
-	},
-	{
-		name: 'postThreeTimes',
-		experience: 50,
-		description: 'Post or reply 3 Times in discussion forum',
-		maxQuota: 1,
-		resetTime: 'semester'
-	},
-	{
-		name: 'submitAllWeeklyAssignments',
-		experience: 10,
-		description: 'Submit all weekly assignments',
-		maxQuota: 1,
-		resetTime: 'semester'
-	},
-	{
-		name: 'midExam',
-		experience: 10,
-		description: 'Attend the mid exam',
-		maxQuota: 1,
-		resetTime: 'semester'
-	},
-	{
-		name: 'finalExam',
-		experience: 10,
-		description: 'Attend the final exam',
-		maxQuota: 1,
-		resetTime: 'semester'
+		resetTime: 'semester',
+		activityGroupId: groups.IMAGE_SEMESTER
 	},
 	{
 		name: 'submitProject',
 		experience: 50,
-		description: 'Submit the project assignment',
+		description: 'Submitting a project',
 		maxQuota: 1,
-		resetTime: 'semester'
-	},
-	{
-		name: 'completeAllQuests',
-		experience: 500,
-		description: 'Complete all the quests',
-		maxQuota: 1,
-		resetTime: 'semester'
+		resetTime: 'semester',
+		activityGroupId: groups.SEMESTER
 	}
 ];
 
@@ -129,12 +85,8 @@ async function insertTitles() {
 }
 
 async function insertActvities() {
-	activity.forEach(async (action) => {
-		await prisma.activityType.upsert({
-			where: { name: action.name },
-			update: {},
-			create: action
-		});
+	await prisma.activityType.createMany({
+		data: activity
 	});
 }
 
@@ -173,6 +125,35 @@ async function insertUsers() {
 	const data = await Promise.all(dataAsync);
 
 	await prisma.user.createMany({ data });
+}
+
+async function insertLevels() {
+	interface Level {
+		level: number;
+		experience: number;
+		levelName: string;
+	}
+	const levels: Level[] = [
+		{
+			level: 1,
+			experience: 0,
+			levelName: 'Beginner'
+		},
+		{
+			level: 2,
+			experience: 100,
+			levelName: 'Intermediate'
+		},
+		{
+			level: 3,
+			experience: 200,
+			levelName: 'Advanced'
+		}
+	];
+
+	await prisma.level.createMany({
+		data: levels
+	});
 }
 
 async function insertUserClassMapping() {
@@ -243,11 +224,59 @@ async function insertUserActivities() {
 	await prisma.userActivities.createMany({ data });
 }
 
+async function insertGroups() {
+	interface Group {
+		id: number;
+		name: string;
+	}
+
+	const input: Group[] = [
+		{
+			id: groups.WEEKLY,
+			name: 'weekly'
+		},
+		{
+			id: groups.SEMESTER,
+			name: 'semester'
+		},
+		{
+			id: groups.IMAGE_SEMESTER,
+			name: 'imageSemester'
+		}
+	];
+
+	await prisma.activityGroup.createMany({
+		data: input
+	});
+}
+
+async function insertAttributes() {
+	interface Attribute {
+		name: string;
+	}
+
+	const input: Attribute[] = [
+		{
+			name: 'url'
+		}
+	];
+
+	prisma.attribute.createMany({
+		data: input
+	});
+}
+
 async function main() {
-	await insertTitles();
+	await insertGroups();
+	await insertAttributes();
 	await insertActvities();
-	await insertClass();
+
+	await insertTitles();
+	await insertLevels();
+
 	await insertUsers();
+	await insertClass();
+
 	await insertUserClassMapping();
 	await insertUserActivities();
 }

@@ -4,16 +4,19 @@ services:
   db:
     image: mysql:5.7
     volumes:
-      - db-vol:/var/lib/mysql
+      - cleveldb-vol:/var/lib/mysql
     ports:
       - '3307:3306'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_ROOT_USER: ${DB_USER}
+    stdin_open: true
+    tty: true
+    
   app:
-    build: .
-    image: steven4565/class-gamification
+    # build: .
+    image: steven4565/class-gamification:0.1.0
     ports:
       - '3000:3000'
     environment:
@@ -22,6 +25,8 @@ services:
       DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db/${DB_NAME}
     depends_on:
       - db
+    stdin_open: true
+    tty: true
 
 volumes:
-  db-vol:
+  cleveldb-vol:

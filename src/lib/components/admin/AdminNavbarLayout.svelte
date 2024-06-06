@@ -10,6 +10,8 @@
         <p class="font-poppins font-medium text-slateLavender text-sm">Hi there! Here to check points?</p>
 	</svelte:fragment>
 	<svelte:fragment slot="trail">
-        <ArrowRightToBracketOutline size="lg" role="button" color="slateLavender" on:click={signOut} class="opacity-80"/>
+		<form action="/?/logout" method="post">
+			<button type="submit" class="btn w-full"><ArrowRightToBracketOutline size="lg" role="button" color="slateLavender"class="opacity-80"/></button>
+		</form>
 	</svelte:fragment>
 </AppBar>

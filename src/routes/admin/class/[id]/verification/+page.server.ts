@@ -2,10 +2,10 @@ import type { Actions, PageServerLoad } from '../$types';
 import prisma from '$lib/server/prisma';
 import { userActivityQuery } from '$lib/types/verificationTable';
 import type { TableUserActivity } from '$lib/types/verificationTable';
-import { fail } from '@sveltejs/kit';
+import { fail, json } from '@sveltejs/kit';
 import { errorHandler } from '$lib/server/errorHandler';
 
-export const load: PageServerLoad = async (event) => {
+export const load = async (event) => {
 	const id = event.params.id;
 
 	const res: TableUserActivity[] = await prisma.userActivities.findMany({
@@ -19,27 +19,23 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	invalidate: async ({ request }) => {
-		const formData = await request.formData();
-		const id = Number(formData.get('id'));
+	validateAsg: async (event) => {
+		const request = await event.request.formData();
+		const id = request.get('id');
+		const valid = request.get('valid');
 
-		if (!id) return fail(400, { message: 'Invalid request' });
-
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const [_, err] = await errorHandler(
+		const [result, resError] = await errorHandler(
 			prisma.userActivities.update({
 				where: {
-					id
+					id: Number(id)
 				},
 				data: {
-					valid: false
+					valid: valid == 'true' ? false : true
 				}
 			})
 		);
-
-		if (err) {
-			console.error(err);
-			return fail(400, { message: 'Internal server error' });
-		}
-	}
+		if (!result || resError)
+			return fail(500, { message: 'An error occured while updating class.' });
+		return { result };
+    }
 };

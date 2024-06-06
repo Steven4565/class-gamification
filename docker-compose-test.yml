@@ -6,19 +6,19 @@ services:
     volumes:
       - my-db:/var/lib/mysql
     ports:
-      - '3306:3306'
+      - '3307:3306'
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: mydatabase
       MYSQL_USER: myuser
       MYSQL_PASSWORD: mypassword
   # storage:
-  #   build: 
+  #   build:
   #     context: ./storage
   #     dockerfile: Dockerfile
-  #   ports: 
+  #   ports:
   #     - 80:80
-  #   volumes: 
+  #   volumes:
   #     - storage-vol:/var/lib/app
 
 volumes:

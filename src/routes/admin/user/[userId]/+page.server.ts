@@ -3,18 +3,27 @@ import prisma from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import { calculateCurrentLevel, getClasses } from '$lib/components/user/getUserData';
 
-export async function load({ locals: { user }, url, params: {userId} }) {
-	if (!user || user.id !== userId) error(401, 'Unauthorized');
+export async function load({ params: { userId }, url }) {
+	// load user
+	const [user, userError] = await errorHandler(
+		prisma.user.findFirst({
+			where: { id: userId },
+			include: { userClass: true }
+		})
+	);
+	if (userError || !user) error(400, { message: 'User not found' });
 
 	// load classes
-	const [classRes, classError] = await errorHandler(getClasses(user.id));
+	const [classRes, classError] = await errorHandler(getClasses(userId));
 	if (classError || !classRes) error(400, { message: 'No classes joined' });
 	const { classes } = classRes;
 
 	// redirect user to first class
 	const classIdParams = url.searchParams.get('classId');
-	const classUrl = `/user/${user.id}?classId=${classes[0].classId}`;
-	if (classIdParams === null) redirect(300, classUrl);
+	const classUrl = `/admin/user/${userId}?classId=${classes[0].classId}`;
+	if (classIdParams === null) {
+		redirect(301, classUrl);
+	}
 
 	// check valid class ID
 	const classId = parseInt(classIdParams);
@@ -24,7 +33,7 @@ export async function load({ locals: { user }, url, params: {userId} }) {
 	const [userActivities, userActivitiesError] = await errorHandler(
 		prisma.userActivities.findMany({
 			where: {
-				userId: user.id,
+				userId,
 				classId
 			},
 			include: {
@@ -43,7 +52,7 @@ export async function load({ locals: { user }, url, params: {userId} }) {
 	const [actions, actionsError] = await errorHandler(
 		prisma.userActivities.findMany({
 			where: {
-				userId: user.id,
+				userId,
 				classId
 			},
 			include: {

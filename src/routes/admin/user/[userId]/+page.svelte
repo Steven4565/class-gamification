@@ -4,12 +4,12 @@
 	import UserActivitiyList from '$lib/components/user/UserActivitiyList.svelte';
 	import UserProfile from '$lib/components/user/UserProfile.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
-	import { getToastStore,  type ToastSettings } from '@skeletonlabs/skeleton';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
 	const toastStore = getToastStore();
 
 	export let data;
-	let { user, classes } = data;
+	let { user } = data;
 	let actions = data.actions;
 
 	selectedClassStore.subscribe((value) => {

@@ -8,10 +8,10 @@
 	import type { ModalSettings, PopupSettings, ToastSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import type { RowTableUserActivity, TableUserActivity } from '$lib/types/verificationTable';
-	import { unknown } from 'zod';
 	import { TrashBinOutline, UndoOutline } from 'flowbite-svelte-icons';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { invalidate } from '$app/navigation';
 
 	let checkedStates: { [key: number]: boolean } = {};
 
@@ -20,37 +20,36 @@
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
 
-	let userList: RowTableUserActivity[] = userAct.map((item) => {
-		let mappedItem: RowTableUserActivity = {
-			id: item.id,
-			username: item.user.username,
-			actionTypeName: item.actionType.name,
-			doneAt: item.doneAt.toDateString() + ' ' + item.doneAt.toLocaleTimeString(),
-			valid: item.valid,
-			proof: null
-		};
+	function getRowHandler(userAct: TableUserActivity[]) {
+		const userList: RowTableUserActivity[] = userAct.map((item) => {
+			let mappedItem: RowTableUserActivity = {
+				id: item.id,
+				username: item.user.username,
+				actionTypeName: item.actionType.name,
+				doneAt: item.doneAt.toDateString() + ' ' + item.doneAt.toLocaleTimeString(),
+				valid: item.valid,
+				proof: null
+			};
 
-		if (item.actionType.group.name == 'imageSemester') {
-			mappedItem.proof = item.attributeMap;
-		}
+			if (item.actionType.group.name == 'imageSemester') {
+				mappedItem.proof = item.attributeMap;
+			}
 
-		return mappedItem;
-	});
+			return mappedItem;
+		});
 
-	const handler = new DataHandler(userList, { rowsPerPage: 10 });
-	const rows = handler.getRows();
+		return new DataHandler(userList, { rowsPerPage: 10 });
+	}
+
+	$: handler = getRowHandler(userAct);
+	$: rows = handler.getRows();
+	$: rowCount = handler.getRowCount();
+
 	let searchValue: string;
-	const rowCount = handler.getRowCount();
 
 	function toggleCheckbox(id: number) {
 		checkedStates[id] = !checkedStates[id];
 	}
-
-	onMount(() => {
-		userList.forEach((row) => {
-			checkedStates[row.id] = true;
-		});
-	});
 
 	function toggleSelectAll() {
 		const selectAllCheckbox = document.querySelector('.select-all') as HTMLInputElement;
@@ -100,11 +99,11 @@
 	}
 
 	const onSubmit: SubmitFunction = () => {
-
 		return async ({ result, update }) => {
 			if (result.type === 'success') {
+				const valid = result.data?.result.valid;
 				const t: ToastSettings = {
-					message: `Action have been deleted`,
+					message: valid ? 'Activity reversed' : 'Activity invalidated',
 					background: 'variant-success'
 				};
 				toastStore.trigger(t);
@@ -153,26 +152,6 @@
 					/>
 				</svg>
 			</button>
-
-			<!-- <button>
-				<svg
-					class="h-6 w-6 text-gray-500 dark:text-white"
-					aria-hidden="true"
-					xmlns="http://www.w3.org/2000/svg"
-					width="24"
-					height="24"
-					fill="none"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke="currentColor"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M5 12h14m-7 7V5"
-					/>
-				</svg>
-			</button> -->
 		</div>
 	</div>
 
@@ -235,12 +214,12 @@
 								<input type="hidden" name="valid" value={row.valid} />
 								<button type="submit">
 									{#if row.valid}
-										<TrashBinOutline size="md"/>
+										<TrashBinOutline size="md" />
 									{:else}
-										<UndoOutline size="md"/>
+										<UndoOutline size="md" />
 									{/if}
 								</button>
-							</form>		
+							</form>
 						</td>
 					</tr>
 				{/each}

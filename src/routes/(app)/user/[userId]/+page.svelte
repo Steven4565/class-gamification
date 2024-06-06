@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UserActivitiyList from '$lib/components/user/UserActivitiyList.svelte';
 	import UserProfile from '$lib/components/user/UserProfile.svelte';
@@ -9,7 +9,7 @@
 	const toastStore = getToastStore();
 
 	export let data;
-	let { user, nextExp, title, currExp } = data;
+	$: ({ user, nextExp, title, currExp } = data);
 	let actions = data.actions;
 
 	selectedClassStore.subscribe((value) => {

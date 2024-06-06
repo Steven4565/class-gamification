@@ -101,8 +101,9 @@
 	const onSubmit: SubmitFunction = () => {
 		return async ({ result, update }) => {
 			if (result.type === 'success') {
+				const valid = result.data?.result.valid;
 				const t: ToastSettings = {
-					message: `Action have been deleted`,
+					message: valid ? 'Activity reversed' : 'Activity invalidated',
 					background: 'variant-success'
 				};
 				toastStore.trigger(t);

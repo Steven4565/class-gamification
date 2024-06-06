@@ -7,7 +7,7 @@
 	import { get } from 'svelte/store';
 
 	export let data;
-	let { actions, userId } = data;
+	$: ({ actions, userId } = data);
 
 	$: quests = actions.filter((action) => action.resetTime === 'semester');
 	$: activities = actions.filter((action) => action.resetTime === 'weekly');

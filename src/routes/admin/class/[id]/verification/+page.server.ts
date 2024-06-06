@@ -24,6 +24,8 @@ export const actions: Actions = {
 		const id = request.get('id');
 		const valid = request.get('valid');
 
+		// FIXME: check if revalidating the exceeds the limit
+
 		const [result, resError] = await errorHandler(
 			prisma.userActivities.update({
 				where: {

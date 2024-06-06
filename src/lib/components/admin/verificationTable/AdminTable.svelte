@@ -5,10 +5,13 @@
 	import RowsPerPage from '$lib/components/admin/verificationTable/RowsPerPage.svelte';
 	import { studentActivityDownloadExcel } from '$lib/utils/exportToExcel';
 	import { getModalStore, getToastStore, popup } from '@skeletonlabs/skeleton';
-	import type { ModalSettings, PopupSettings } from '@skeletonlabs/skeleton';
+	import type { ModalSettings, PopupSettings, ToastSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import type { RowTableUserActivity, TableUserActivity } from '$lib/types/verificationTable';
 	import { unknown } from 'zod';
+	import { TrashBinOutline, UndoOutline } from 'flowbite-svelte-icons';
+	import { enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	let checkedStates: { [key: number]: boolean } = {};
 
@@ -17,8 +20,8 @@
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
 
-	const userList: RowTableUserActivity[] = userAct.map((item) => {
-		const mappedItem: RowTableUserActivity = {
+	let userList: RowTableUserActivity[] = userAct.map((item) => {
+		let mappedItem: RowTableUserActivity = {
 			id: item.id,
 			username: item.user.username,
 			actionTypeName: item.actionType.name,
@@ -60,12 +63,6 @@
 		});
 	}
 
-	const popupFeatured: PopupSettings = {
-		event: 'click',
-		target: 'popupFeatured',
-		placement: 'bottom'
-	};
-
 	function extractValue(input: unknown): string[] | undefined {
 		// Check if input is an array
 		if (Array.isArray(input)) {
@@ -101,45 +98,39 @@
 		};
 		modalStore.trigger(modal);
 	}
+
+	const onSubmit: SubmitFunction = () => {
+
+		return async ({ result, update }) => {
+			if (result.type === 'success') {
+				const t: ToastSettings = {
+					message: `Action have been deleted`,
+					background: 'variant-success'
+				};
+				toastStore.trigger(t);
+			} else if (result.type === 'error') {
+				const t: ToastSettings = {
+					message: `Failed to delete actions`,
+					background: 'variant-error'
+				};
+				toastStore.trigger(t);
+			}
+
+			await update();
+		};
+	};
 </script>
 
 <div>
 	<div class="flex justify-between">
 		<div class="flex gap-2">
 			<input
-				class="input w-40 border-solid border-primary-400 py-1 pl-3 text-base"
+				class="input w-52 border-solid border-primary-400 py-1 pl-3 text-base"
 				type="search"
 				placeholder="Search"
 				bind:value={searchValue}
 				on:input={() => handler.search(searchValue)}
 			/>
-
-			<button class="btn bg-primary-500 py-1 text-white" use:popup={popupFeatured}>
-				<span class="inline-flex items-center text-base">
-					Activities
-					<svg
-						class="h-6 w-6 pl-2 text-white dark:text-white"
-						aria-hidden="true"
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						fill="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M18.425 10.271C19.499 8.967 18.57 7 16.88 7H7.12c-1.69 0-2.618 1.967-1.544 3.271l4.881 5.927a2 2 0 0 0 3.088 0l4.88-5.927Z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-				</span>
-			</button>
-
-			<div class="card w-72 p-4 shadow-xl" data-popup="popupFeatured">
-				<!-- TODO: -->
-				<div><p>Demo Content</p></div>
-				<div class="bg-surface-100-800-token arrow" />
-			</div>
 		</div>
 
 		<div>
@@ -163,7 +154,7 @@
 				</svg>
 			</button>
 
-			<button>
+			<!-- <button>
 				<svg
 					class="h-6 w-6 text-gray-500 dark:text-white"
 					aria-hidden="true"
@@ -181,7 +172,7 @@
 						d="M5 12h14m-7 7V5"
 					/>
 				</svg>
-			</button>
+			</button> -->
 		</div>
 	</div>
 
@@ -239,24 +230,17 @@
 							{/if}
 						</td>
 						<td class="border-b px-4 py-2">
-							<button use:popup={popupFeatured}>
-								<svg
-									class="h-6 w-6 text-gray-800 dark:text-white"
-									aria-hidden="true"
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									fill="none"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke="currentColor"
-										stroke-linecap="round"
-										stroke-width="2"
-										d="M12 6h.01M12 12h.01M12 18h.01"
-									/>
-								</svg>
-							</button>
+							<form method="post" action="?/validateAsg" use:enhance={onSubmit}>
+								<input type="hidden" name="id" value={row.id} />
+								<input type="hidden" name="valid" value={row.valid} />
+								<button type="submit">
+									{#if row.valid}
+										<TrashBinOutline size="md"/>
+									{:else}
+										<UndoOutline size="md"/>
+									{/if}
+								</button>
+							</form>		
 						</td>
 					</tr>
 				{/each}

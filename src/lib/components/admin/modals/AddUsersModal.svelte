@@ -44,7 +44,6 @@
 			<p class="font-poppins font-bold text-xl">ADD STUDENT</p>
 			<textarea class="w-full bg-[#00BCF1] bg-opacity-10 font-poppins p-3.5 rounded-md" name="studentId" rows="5" placeholder="Input NIM" />
 			<div class="flex justify-evenly w-full">
-				<button class="{cButton} bg-sunriseOrange bg-opacity-75" disabled>UPLOAD</button>
 				<button type="submit" class="{cButton} bg-electricCyan">SUMBIT</button>
 			</div>
 		</form>

@@ -7,6 +7,10 @@
 		exp: number;
 		title: string;
 	};
+
+	export let currExp: number;
+	export let nextExp: number;
+	export let title: string;
 </script>
 
 <div class=" flex items-center">
@@ -21,20 +25,21 @@
 	<div class="w-full">
 		<div class="flex w-full justify-between">
 			<div>
+				<p>{title}</p>
 				<h1 class="h1 text-2xl font-bold">{user.username}</h1>
 				<p class="p">{user.id}</p>
 			</div>
-			<h3 class="h3 text-3xl font-bold text-primary-500">{user.exp} POINTS</h3>
+			<h3 class="h3 text-3xl font-bold text-primary-500">{currExp} POINTS</h3>
 		</div>
 		<div class="flex items-center justify-center gap-3">
 			<ProgressBar
 				label="Progress Bar"
-				value={user.exp}
-				max={100}
+				value={currExp}
+				max={nextExp}
 				height="h-5"
 				track="bg-surface-600"
 			/>
-			<span class="font-bold">{user.exp}/100</span>
+			<span class="font-bold">{currExp}/{nextExp}</span>
 		</div>
 	</div>
 </div>

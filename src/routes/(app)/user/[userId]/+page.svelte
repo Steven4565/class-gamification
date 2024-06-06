@@ -4,12 +4,12 @@
 	import UserActivitiyList from '$lib/components/user/UserActivitiyList.svelte';
 	import UserProfile from '$lib/components/user/UserProfile.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
-	import { getToastStore,  type ToastSettings } from '@skeletonlabs/skeleton';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
 	const toastStore = getToastStore();
 
 	export let data;
-	let { user, classes } = data;
+	let { user, nextExp, title, currExp } = data;
 	let actions = data.actions;
 
 	selectedClassStore.subscribe((value) => {
@@ -39,7 +39,7 @@
 </script>
 
 <section class="mx-auto w-[900px]">
-	<UserProfile {user} />
+	<UserProfile {user} {nextExp} {currExp} {title} />
 
 	<div class="mt-5">
 		<h2 class="h2 text-3xl font-bold">Recent Activities</h2>

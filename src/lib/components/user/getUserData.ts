@@ -20,6 +20,8 @@ export async function getClasses(userId: string) {
 }
 
 export function calculateCurrentLevel(levels: Level[], exp: number) {
+	levels = levels.sort((l) => l.level).reverse();
+
 	let currExp = exp;
 	let currentLevel = 0;
 	levels.forEach((level, i) => {
@@ -29,8 +31,17 @@ export function calculateCurrentLevel(levels: Level[], exp: number) {
 		}
 	});
 
+	let nextExp;
+	if (currentLevel === levels.length - 1) {
+		nextExp = levels[currentLevel].experience;
+		currExp += nextExp;
+	} else {
+		nextExp = levels[currentLevel + 1].experience;
+	}
+
 	return {
-		level: currentLevel,
-		exp: currExp
+		title: levels[currentLevel].levelName,
+		nextExp,
+		currExp
 	};
 }

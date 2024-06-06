@@ -3,7 +3,7 @@ import prisma from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import { calculateCurrentLevel, getClasses } from '$lib/components/user/getUserData';
 
-export async function load({ locals: { user }, url, params: {userId} }) {
+export async function load({ locals: { user }, url, params: { userId } }) {
 	if (!user || user.id !== userId) error(401, 'Unauthorized');
 
 	// load classes
@@ -63,12 +63,13 @@ export async function load({ locals: { user }, url, params: {userId} }) {
 	);
 	if (!levels || levelsError) error(500, { message: 'Levels not found' });
 
-	const { level: currLevelIdx, exp: currExp } = calculateCurrentLevel(levels, exp);
+	const { currExp, nextExp, title } = calculateCurrentLevel(levels, exp);
 
 	return {
 		user: { ...user, exp, title: 'testTitle' },
 		actions,
-		currentLevel: levels[currLevelIdx],
-		currExp
+		currExp,
+		nextExp,
+		title
 	};
 }

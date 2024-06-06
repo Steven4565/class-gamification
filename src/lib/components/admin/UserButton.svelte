@@ -48,8 +48,8 @@
 	const cButton = 'font-inter font-medium text-sm bg-white px-5 py-1.5 w-full shadow-md';
 </script>
 
-<button
-	on:click={() => goto(`#`)}
+<a
+	href={`/admin/user/${user.userId}`}
 	class="relative flex h-56 w-44 flex-col items-center justify-center gap-1 overflow-hidden rounded-lg bg-[#F8F8F8] bg-opacity-70 p-5 text-center shadow-lg drop-shadow-lg"
 >
 	<Avatar class="" width="w-24" src="https://placehold.co/200" alt="" />
@@ -73,4 +73,4 @@
 			</div>
 		</div>
 	</div>
-</button>
+</a>

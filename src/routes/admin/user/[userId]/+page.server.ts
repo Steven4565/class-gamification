@@ -72,13 +72,14 @@ export async function load({ params: { userId }, url }) {
 	);
 	if (!levels || levelsError) error(500, { message: 'Levels not found' });
 
-	const { level: currLevelIdx, exp: currExp } = calculateCurrentLevel(levels, exp);
+	const { currExp, nextExp, title } = calculateCurrentLevel(levels, exp);
 
 	return {
 		user: { ...user, exp, title: 'testTitle' },
 		actions,
-		currentLevel: levels[currLevelIdx],
 		currExp,
+		nextExp,
+		title,
 		classes: classes.map((c) => {
 			return {
 				name: c.class.name,

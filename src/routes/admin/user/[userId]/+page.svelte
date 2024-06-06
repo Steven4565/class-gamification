@@ -10,7 +10,7 @@
 	const toastStore = getToastStore();
 
 	export let data;
-	let { user, classes } = data;
+	let { user, classes, currExp, nextExp, title } = data;
 	let actions = data.actions;
 
 	selectedClassStore.subscribe((value) => {
@@ -40,7 +40,7 @@
 </script>
 
 <section class="mx-auto w-[900px]">
-	<UserProfile {user} />
+	<UserProfile {user} {currExp} {nextExp} {title} />
 	<ClassButton {classes} />
 
 	<div class="mt-5">

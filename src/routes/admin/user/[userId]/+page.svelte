@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import ClassButton from '$lib/components/ClassButton.svelte';
 	import UserActivitiyList from '$lib/components/user/UserActivitiyList.svelte';
 	import UserProfile from '$lib/components/user/UserProfile.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
@@ -9,7 +10,7 @@
 	const toastStore = getToastStore();
 
 	export let data;
-	let { user } = data;
+	let { user, classes } = data;
 	let actions = data.actions;
 
 	selectedClassStore.subscribe((value) => {
@@ -40,6 +41,7 @@
 
 <section class="mx-auto w-[900px]">
 	<UserProfile {user} />
+	<ClassButton {classes} />
 
 	<div class="mt-5">
 		<h2 class="h2 text-3xl font-bold">Recent Activities</h2>

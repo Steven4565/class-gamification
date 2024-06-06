@@ -78,6 +78,12 @@ export async function load({ params: { userId }, url }) {
 		user: { ...user, exp, title: 'testTitle' },
 		actions,
 		currentLevel: levels[currLevelIdx],
-		currExp
+		currExp,
+		classes: classes.map((c) => {
+			return {
+				name: c.class.name,
+				classId: c.class.id
+			};
+		})
 	};
 }

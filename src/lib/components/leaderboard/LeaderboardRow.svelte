@@ -4,7 +4,7 @@
 	export let rank: number;
 </script>
 
-<div class="mt-5 flex items-center bg-gray-300 p-3">
+<div class="items-centerp-3 mt-5 flex outline-4 outline-gray-300">
 	<div>
 		<h4>{rank}</h4>
 	</div>
@@ -12,7 +12,7 @@
 		<img src="https://placekitten.com/100/100" alt="" />
 	</div>
 
-	<div class="flex items-center">
+	<div class="grid grid-cols-2 items-center">
 		<h5>{name}</h5>
 		<p>{points} Points</p>
 	</div>

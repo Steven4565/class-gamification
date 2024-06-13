@@ -202,7 +202,9 @@ async function main() {
 			{ userId: 'user', classId: 1 },
 			{ userId: 'user', classId: 2 },
 			{ userId: 'user2', classId: 1 },
-			{ userId: 'user2', classId: 2 }
+			{ userId: 'user2', classId: 2 },
+			{ userId: 'user3', classId: 2 },
+			{ userId: 'user4', classId: 2 }
 		]
 	});
 

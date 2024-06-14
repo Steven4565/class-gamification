@@ -3,12 +3,29 @@
 	import LeaderboardRow from '$lib/components/leaderboard/LeaderboardRow.svelte';
 	import { enhance } from '$app/forms';
 	import { fail, type SubmitFunction } from '@sveltejs/kit';
+	import selectedClassStore from '$lib/stores/selectedClassStore.js';
+	import { onMount } from 'svelte';
 
 	export let data;
 
 	$: leaderboard = data.leaderboard || [];
 
 	let isGlobal = false;
+
+	let classId = 0;
+	selectedClassStore.subscribe((_classId) => {
+		classId = _classId;
+	});
+
+	onMount(async () => {
+		const form = document.getElementById('local-form-button');
+		if (form && form instanceof HTMLFormElement) {
+			form.requestSubmit();
+			return;
+		}
+
+		// TODO: handle error here
+	});
 
 	const onSubmit: SubmitFunction = ({ action, cancel }) => {
 		if (action.search === '?/global') {
@@ -39,7 +56,8 @@
 				>All</button
 			>
 		</form>
-		<form method="post" action="?/local" use:enhance={onSubmit}>
+		<form id="local-form-button" method="post" action="?/local" use:enhance={onSubmit}>
+			<input type="hidden" name="classId" value={classId} />
 			<button class="variant-filled-primary btn rounded-xl py-1" type="submit" disabled={!isGlobal}
 				>This class</button
 			>

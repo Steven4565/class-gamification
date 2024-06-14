@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UserActivitiyList from '$lib/components/user/UserActivitiyList.svelte';
@@ -27,7 +28,8 @@
 			});
 			actions = data;
 			$page.url.searchParams.set('classId', selectedClass.toString());
-			goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+			if (browser)
+				goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 		} catch {
 			const t: ToastSettings = {
 				message: 'Failed to fetch actions',

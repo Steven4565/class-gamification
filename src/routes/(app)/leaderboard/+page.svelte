@@ -16,15 +16,20 @@
 	let isGlobal = false;
 
 	let classId = 0;
-	selectedClassStore.subscribe((_classId) => {
+	selectedClassStore.subscribe(async (_classId) => {
 		classId = _classId;
-		$page.url.searchParams.set('classId', _classId.toString());
-		goto(`./leaderboard?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+		onClassChange(_classId);
 	});
 
-	onMount(async () => {
-		updateLocalLeaderboard();
-	});
+	function onClassChange(selectedClass: number) {
+		try {
+			$page.url.searchParams.set('classId', classId.toString());
+			if (browser)
+				goto(`./leaderboard?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+		} catch {
+			console.log('catchc');
+		}
+	}
 
 	async function updateLocalLeaderboard() {
 		if (!browser) return;

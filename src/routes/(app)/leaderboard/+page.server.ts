@@ -74,9 +74,26 @@ async function getGlobal() {
 	return getSortedList(userActivitiesWithPoints);
 }
 
-export async function load() {
-	const [leaderboard, leaderboardError] = await errorHandler(getGlobal());
-	if (!leaderboard || leaderboardError) return fail(500, { message: 'Failed to get leaderboard' });
+async function getClasses(userId: string) {
+	const classes = await prisma.userClass.findMany({
+		where: {
+			userId
+		},
+		include: {
+			class: true
+		}
+	});
+	const classProp = classes.map((c) => {
+		return {
+			value: c.classId.toString(),
+			name: c.class.name
+		};
+	});
+	return { classes, classProp };
+}
+
+export async function load({ locals: { user }, url }) {
+	if (!user) return fail(500, { message: 'Failed to fetch user' });
 
 	// load classes
 	const [classRes, classError] = await errorHandler(getClasses(user.id));
@@ -86,12 +103,16 @@ export async function load() {
 	// redirect user to first class
 	const classIdParams = url.searchParams.get('classId');
 	const classUrl = `/leaderboard?classId=${classes[0].classId}`;
-	if (classIdParams === null) redirect(300, classUrl);
+	if (classIdParams === null || !classes.find((c) => c.classId === parseInt(classIdParams)))
+		redirect(302, classUrl);
 
 	// check valid class ID
 	const classId = parseInt(classIdParams);
 	if (Number.isNaN(classId)) error(400, { message: 'Invalid classId' });
 
+	// get local class leaderboar
+	const [leaderboard, leaderboardError] = await errorHandler(getLocal(classId));
+	if (!leaderboard || leaderboardError) return fail(500, { message: 'Failed to get leaderboard' });
 	return { leaderboard };
 }
 

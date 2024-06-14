@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AdminNavbarLayout from '$lib/components/admin/AdminNavbarLayout.svelte';
 	import { AppShell } from '@skeletonlabs/skeleton';
+
 </script>
 
 <AppShell>

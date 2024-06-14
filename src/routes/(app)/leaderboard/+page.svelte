@@ -18,27 +18,13 @@
 	let classId = 0;
 	selectedClassStore.subscribe(async (_classId) => {
 		classId = _classId;
-		onClassChange(_classId);
+		onClassChange();
 	});
 
-	function onClassChange(selectedClass: number) {
-		try {
-			$page.url.searchParams.set('classId', classId.toString());
-			if (browser)
-				goto(`./leaderboard?${$page.url.searchParams.toString()}`, { invalidateAll: true });
-		} catch {
-			console.log('catchc');
-		}
-	}
-
-	async function updateLocalLeaderboard() {
-		if (!browser) return;
-		const form = document?.getElementById('local-form-button');
-		if (form && form instanceof HTMLFormElement) {
-			form.requestSubmit();
-			return;
-		}
-		console.error('Failed to find form element');
+	function onClassChange() {
+		$page.url.searchParams.set('classId', classId.toString());
+		if (browser)
+			goto(`./leaderboard?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 	}
 
 	const onSubmit: SubmitFunction = ({ action, cancel }) => {

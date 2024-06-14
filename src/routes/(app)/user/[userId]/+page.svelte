@@ -10,7 +10,8 @@
 	const toastStore = getToastStore();
 
 	export let data;
-	$: ({ user, nextExp, title, currExp } = data);
+	$: ({ nextExp, title, currExp } = data);
+	let user = data.user;
 	let actions = data.actions;
 
 	selectedClassStore.subscribe((value) => {

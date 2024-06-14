@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { Prisma } from '@prisma/client';
 	import { Avatar, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { ActivitySelected } from '$lib/stores/admin/activitySelected';
-	import { AngleLeftOutline, EditOutline } from 'flowbite-svelte-icons';
+	import { EditOutline } from 'flowbite-svelte-icons';
 	import { classActions, type ClassData } from '$lib/types/classData';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -26,10 +25,6 @@
 
 	const cActivities = ""
 
-	function gotoAdmin(){
-		goto('/admin')
-	}
-
 	const classData: ClassData = {
 		id: Number.parseInt(classId),
 		name: name,
@@ -51,15 +46,17 @@
 		event.stopPropagation();
 		modalStore.trigger(updateModal);
 	}
+
+	$: queryParams = new URLSearchParams($page.url.search);
+
+	function gotoUser(){
+		queryParams.set('activity', 'false');
+		goto(`${$page.url.pathname}?${queryParams.toString()}`);
+
+	}
 </script>
 
 <div class="px-3">
-	<AngleLeftOutline 
-		size="xl"
-		color="#766D76"
-		class="w-fit cursor-pointer mb-5"
-		on:click={gotoAdmin}
-	/>
 	<div class="w-11/12 mx-auto">
 		<div class="flex justify-between items-center mb-12">
 			<div class="flex gap-x-10">
@@ -68,7 +65,9 @@
 						src="https://placehold.co/200"
 						width="w-36"
 					/>
-					<button class="font-poppins font-medium text-sm text-[#747373]" on:click={() => $ActivitySelected=false}>View Members</button>
+					<button class="font-poppins font-medium text-sm text-[#747373]" 
+						on:click={() => gotoUser()}
+					>View Members</button>
 				</div>
 				<div class="flex flex-col justify-center">
 					<div class="flex">

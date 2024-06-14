@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { Avatar, getModalStore, type ModalSettings, type PopupSettings, popup } from '@skeletonlabs/skeleton';
-	import { AngleLeftOutline, DotsVerticalSolid } from 'flowbite-svelte-icons';
-	import { ActivitySelected } from '$lib/stores/admin/activitySelected';
 	import UserButton from '$lib/components/admin/UserButton.svelte';
 	import { Prisma } from '@prisma/client';
 
@@ -31,14 +29,6 @@
 </script>
 
 <div class="px-3">
-	<AngleLeftOutline 
-		size="xl"
-		color="#766D76"
-		class="w-fit cursor-pointer mb-5"
-		on:click={() => {
-			$ActivitySelected=true;
-		}}
-	/>
 	<div class="flex flex-col w-11/12 mx-auto gap-y-5">
 		<div class="flex justify-between items-center w-full">
 			<div class="flex items-center gap-3">

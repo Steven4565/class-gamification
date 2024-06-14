@@ -9,7 +9,8 @@
 		<h4>{rank}</h4>
 	</div>
 	<div class="mx-5 w-12 overflow-hidden rounded-full">
-		<img src="https://placekitten.com/100/100" alt="" />
+		<!-- <img src="https://placekitten.com/100/100" alt="" /> -->
+		<!-- TODO: replace this  -->
 	</div>
 
 	<div class="grid grid-cols-2 items-center">

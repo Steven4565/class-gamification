@@ -5,6 +5,9 @@
 	import { fail, type SubmitFunction } from '@sveltejs/kit';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -15,17 +18,23 @@
 	let classId = 0;
 	selectedClassStore.subscribe((_classId) => {
 		classId = _classId;
+		$page.url.searchParams.set('classId', _classId.toString());
+		goto(`./leaderboard?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 	});
 
 	onMount(async () => {
-		const form = document.getElementById('local-form-button');
+		updateLocalLeaderboard();
+	});
+
+	async function updateLocalLeaderboard() {
+		if (!browser) return;
+		const form = document?.getElementById('local-form-button');
 		if (form && form instanceof HTMLFormElement) {
 			form.requestSubmit();
 			return;
 		}
-
-		// TODO: handle error here
-	});
+		console.error('Failed to find form element');
+	}
 
 	const onSubmit: SubmitFunction = ({ action, cancel }) => {
 		if (action.search === '?/global') {
@@ -38,11 +47,11 @@
 
 		return async ({ result, update }) => {
 			if (result.type === 'success') {
-				if (result.data) leaderboard = result.data.leaderboard;
-				else {
+				if (result.data) {
+					leaderboard = result.data.leaderboard;
+				} else {
 					return fail(400, { message: 'No data returned' });
 				}
-				await update();
 			}
 		};
 	};

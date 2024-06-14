@@ -103,8 +103,9 @@ export async function load({ locals: { user }, url }) {
 	// redirect user to first class
 	const classIdParams = url.searchParams.get('classId');
 	const classUrl = `/leaderboard?classId=${classes[0].classId}`;
-	if (classIdParams === null || !classes.find((c) => c.classId === parseInt(classIdParams)))
+	if (classIdParams === null || !classes.find((c) => c.classId === parseInt(classIdParams))) {
 		redirect(302, classUrl);
+	}
 
 	// check valid class ID
 	const classId = parseInt(classIdParams);

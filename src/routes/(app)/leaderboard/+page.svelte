@@ -4,10 +4,10 @@
 	import { enhance } from '$app/forms';
 	import { fail, type SubmitFunction } from '@sveltejs/kit';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { onDestroy } from 'svelte';
 
 	export let data;
 
@@ -16,15 +16,18 @@
 	let isGlobal = false;
 
 	let classId = 0;
-	selectedClassStore.subscribe(async (_classId) => {
+	const unsub = selectedClassStore.subscribe(async (_classId) => {
 		classId = _classId;
 		onClassChange();
 	});
 
+	onDestroy(unsub);
+
 	function onClassChange() {
 		$page.url.searchParams.set('classId', classId.toString());
+		isGlobal = false;
 		if (browser)
-			goto(`./leaderboard?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+			goto(`.${$page.url.pathname}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 	}
 
 	const onSubmit: SubmitFunction = ({ action, cancel }) => {
@@ -67,28 +70,13 @@
 	<div class="flex items-center justify-center gap-10">
 		<div class="grid grid-cols-3 items-start gap-16">
 			{#if leaderboard[1]}
-				<UserPodium
-					name={leaderboard[1].userId}
-					points={leaderboard[1].experience}
-					rank={2}
-					url="/user/100"
-				/>
+				<UserPodium name={leaderboard[1].userId} points={leaderboard[1].experience} rank={2} />
 			{/if}
 			{#if leaderboard[0]}
-				<UserPodium
-					name={leaderboard[0].userId}
-					points={leaderboard[0].experience}
-					rank={1}
-					url="/user/100"
-				/>
+				<UserPodium name={leaderboard[0].userId} points={leaderboard[0].experience} rank={1} />
 			{/if}
 			{#if leaderboard[2]}
-				<UserPodium
-					name={leaderboard[2].userId}
-					points={leaderboard[2].experience}
-					rank={3}
-					url="/user/100"
-				/>
+				<UserPodium name={leaderboard[2].userId} points={leaderboard[2].experience} rank={3} />
 			{/if}
 		</div>
 	</div>

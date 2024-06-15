@@ -6,6 +6,7 @@
 	import UserProfile from '$lib/components/user/UserProfile.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { onDestroy, onMount } from 'svelte';
 
 	const toastStore = getToastStore();
 
@@ -14,9 +15,11 @@
 	let user = data.user;
 	let actions = data.actions;
 
-	selectedClassStore.subscribe((value) => {
+	const unsub = selectedClassStore.subscribe((value) => {
 		onClassChange(value);
 	});
+
+	onDestroy(unsub);
 
 	async function onClassChange(selectedClass: number) {
 		try {

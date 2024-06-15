@@ -7,7 +7,10 @@
 	import { get } from 'svelte/store';
 
 	export let data;
-	$: ({ actions, userId } = data);
+	let actions = data.actions;
+	let userId = data.userId;
+	$: actions;
+	$: userId;
 
 	$: quests = actions.filter((action) => action.resetTime === 'semester');
 	$: activities = actions.filter((action) => action.resetTime === 'weekly');
@@ -75,8 +78,11 @@
 		};
 	};
 
+	// TODO: Please find a better method than this.
+	let firstTimeLoad = true;
 	selectedClassStore.subscribe((value) => {
-		onClassChange(value);
+		firstTimeLoad = false;
+		if (!firstTimeLoad) onClassChange(value);
 	});
 
 	async function onClassChange(classId: number) {

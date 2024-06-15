@@ -44,7 +44,6 @@ async function getQuotaMap(userId: string, classId: number) {
 			group: true
 		}
 	});
-	if (!activities) error(400, { message: 'No activities found' });
 
 	const activitiesMap: Record<number, number> = userActivities.reduce(
 		(quotaMap: Record<number, number>, { actionTypeId, doneAt }) => {
@@ -74,6 +73,7 @@ export async function load(event) {
 		where: { id: event.locals.user?.id },
 		include: { userClass: true }
 	});
+
 	if (!user) error(400, { message: 'User not found' });
 	if (!user.userClass.length) error(400, { message: 'User class not found' });
 
@@ -171,7 +171,9 @@ export const actions: Actions = {
 					}
 				});
 
-				if (quota >= action.maxQuota) throw new Error('Quota exceeded');
+				if (quota >= action.maxQuota) {
+					return fail(500, { message: 'Bad Request' });
+				}
 
 				// TODO: This is terrible. Don't do this. There's no authentication for the url. Please create a proper image server.
 				if (action.group.name == 'imageSemester') {

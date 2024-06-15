@@ -4,21 +4,6 @@ import { error, fail, redirect, type Actions } from '@sveltejs/kit';
 import { activityQuery, type ActivityPointsType } from './types';
 
 function getSortedList(userActivitiesWithPoints: ActivityPointsType[]) {
-	console.log(userActivitiesWithPoints);
-	// const totalPointsPerUser = userActivitiesWithPoints.reduce(
-	// 	(acc, activity) => {
-	// 		if (!acc[activity.userId]) {
-	// 			acc[activity.userId] = {
-	// 				experience: 0,
-	// 				class: activity.class.name
-	// 			};
-	// 		}
-	// 		acc[activity.userId].experience += activity.actionType.experience;
-	// 		return acc;
-	// 	},
-	// 	{} as Record<string, { experience: number; class: string }>
-	// );
-
 	const totalPointsPerUser = userActivitiesWithPoints.reduce(
 		(acc, activity) => {
 			// If user doesn't exist

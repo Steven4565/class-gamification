@@ -3,6 +3,8 @@
 
 	import ClassButton from './ClassButton.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore';
+	import person from '$lib/assets/icons/person.svg';
+	import logout from '$lib/assets/icons/logout.svg';
 
 	interface ClassProp {
 		classId: number;
@@ -24,6 +26,8 @@
 		target: 'popupAvatar',
 		placement: 'bottom-start'
 	};
+
+	const cButtonClass = 'w-full p-2 text-left hover:bg-primary-50 flex items-center gap-2';
 </script>
 
 <AppBar shadow="shadow-lg">
@@ -43,21 +47,30 @@
 		</button>
 
 		<div class="card w-72 p-4 shadow-xl" data-popup="popupAvatar">
-			<div><p>{id}</p></div>
-			<div><p>{username}</p></div>
-			<hr />
-			<nav class="list-nav">
-				<ul>
-					<li>
-						<a href={'/user/' + id}>Profile</a>
-					</li>
-					<li>
-						<form action="/?/logout" method="post">
-							<button type="submit" class="btn w-full">Logout</button>
-						</form>
-					</li>
-				</ul>
-			</nav>
+			<div class="flex items-center gap-4">
+				<Avatar
+					background="bg-surface-700"
+					width="w-10 h-10"
+					src="https://cdn.discordapp.com/avatars/322362818982707210/08c1e2a6eb0148f4f6cc9caa877ec668.webp?size=100"
+					rounded="rounded-full"
+				/>
+				<div>
+					<div><p class="p text-xl font-bold">{id}</p></div>
+					<div><p class="p text-gray-700">{username}</p></div>
+				</div>
+			</div>
+			<hr class="my-3 h-[2px] bg-slate-400" />
+			<a href={'/user/' + id} class={cButtonClass}>
+				<img src={person} alt="Person Icon" class="h-8 invert-[51%] filter" />
+				<p>Profile</p>
+			</a>
+			<hr class="my-2 h-[2px] bg-slate-400" />
+			<form action="/?/logout" method="post">
+				<button type="submit" class={cButtonClass}>
+					<img src={logout} alt="Person Icon" class="h-7 invert-[51%] filter" />
+					<p>Logout</p>
+				</button>
+			</form>
 		</div>
 	</svelte:fragment>
 </AppBar>

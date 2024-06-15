@@ -1,43 +1,69 @@
 import prisma from '$lib/server/prisma.js';
 import type { ActivityProp } from '$lib/types/activity';
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 
-async function getActions(userId: string, classId: number) {
-	const userActions = await prisma.userActivities.findMany({
-		where: { userId, classId },
-		include: {
-			actionType: true
-		}
+async function getActivities(userId: string, classId: number) {
+	const userActivities = await prisma.userActivities.findMany({
+		where: { userId, classId, valid: true }
 	});
 
-	return userActions;
+	return userActivities;
+}
+function getStartOfWeek() {
+	const date = new Date();
+	const day = date.getDay();
+
+	date.setHours(7, 0, 0, 0); // set GMT+7 for ID
+	date.setDate(date.getDate() - day + 1);
+
+	return date;
+}
+
+function getStartOfSemester() {
+	const date = new Date();
+
+	date.setHours(7, 0, 0, 0);
+	date.setMonth(date.getMonth() - 7); // 7 to overshoot because I'm too lazy to calculate the exact date
+	return date;
+}
+
+function getActivityResetDate(resetTime: string) {
+	if (resetTime === 'weekly') {
+		return getStartOfWeek();
+	} else return getStartOfSemester();
 }
 
 async function getQuotaMap(userId: string, classId: number) {
-	const userActions = await getActions(userId, classId);
+	const userActivities = await getActivities(userId, classId);
 
 	const activities = await prisma.activityType.findMany({
 		include: {
 			group: true
 		}
 	});
-	const activitiesMap: Record<number, number> = userActions.reduce(
-		(quotaMap: Record<number, number>, { actionTypeId }) => {
-			if (!quotaMap[actionTypeId]) quotaMap[actionTypeId] = 1;
+	// if (!activities) error(400, { message: 'No activities found' });
+
+	const activitiesMap: Record<number, number> = userActivities.reduce(
+		(quotaMap: Record<number, number>, { actionTypeId, doneAt }) => {
+			const activityResetTime = activities.find((a) => a.id === actionTypeId)?.resetTime;
+			if (activityResetTime === undefined) error(400, { message: 'Activity not found' });
+			const lastResetDate = getActivityResetDate(activityResetTime);
+
+			if (!quotaMap[actionTypeId] || doneAt <= lastResetDate) quotaMap[actionTypeId] = 0;
 			quotaMap[actionTypeId]++;
 			return quotaMap;
 		},
 		{}
 	);
 
-	const actionWithQuota: ActivityProp[] = activities.map((action) => {
+	const activityWithQuota: ActivityProp[] = activities.map((activity) => {
 		return {
-			...action,
-			quota: activitiesMap[action.id] || 0
+			...activity,
+			quota: activitiesMap[activity.id] || 0
 		};
 	});
 
-	return actionWithQuota;
+	return activityWithQuota;
 }
 
 export const GET = async ({ url }) => {

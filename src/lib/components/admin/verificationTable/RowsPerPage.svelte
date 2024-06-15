@@ -7,7 +7,10 @@
 
 <aside class="flex place-items-center pr-3">
 	Display
-	<select class="select ml-3 px-1 py-1 border-solid border-gray-400 text-sm rounded-md" bind:value={$rowsPerPage}>
+	<select
+		class="select ml-3 rounded-md border-solid border-gray-400 px-1 py-1 text-sm"
+		bind:value={$rowsPerPage}
+	>
 		{#each options as option}
 			<option value={option}>
 				{option}

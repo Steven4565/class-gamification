@@ -21,14 +21,27 @@
 
 <div>
 	{#each actionList as action}
-		<div class="my-3 flex rounded-xl p-3 outline outline-1 outline-surface-700">
-			<div class="w-24">
-				<h2 class="h2 text-green-500"><b>+{action.actionType.experience}</b></h2>
+		<div class="my-3 flex w-full items-center rounded-xl p-3 outline outline-1 outline-surface-700">
+			<div class="flex w-full justify-between">
+				<div class="flex">
+					<div class="w-24">
+						{#if action.valid}
+							<h2 class="h2 text-green-500"><b>+{action.actionType.experience}</b></h2>
+						{:else}
+							<h2 class="h2 text-red-500"><b>+{action.actionType.experience}</b></h2>
+						{/if}
+					</div>
+					<div>
+						<p><b>{action.actionType.name.toUpperCase()} </b></p>
+						<p>{formatDate(action.doneAt)}</p>
+					</div>
+				</div>
 			</div>
-			<div>
-				<p><b>{action.actionType.name.toUpperCase()} </b></p>
-				<p>{formatDate(action.doneAt)}</p>
-			</div>
+			{#if !action.valid}
+				<div class="h-1/2 rounded-full bg-red-500 px-3 py-1">
+					<p class="p text-white">Invalid</p>
+				</div>
+			{/if}
 		</div>
 	{/each}
 </div>

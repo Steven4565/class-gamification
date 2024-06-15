@@ -13,7 +13,6 @@
 
 	$: selectedData = $modalStore[0]?.meta?.selectedData;
 	$: action = selectedData ? classActions.edit : classActions.create;
-	$: console.log(selectedData);
 
 	const formProps = {
 		[classActions.create]: {

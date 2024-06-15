@@ -22,6 +22,7 @@
 	import DeleteActionModal from '$lib/components/admin/modals/DeleteActionModal.svelte';
 	import RemoveUserModal from '$lib/components/admin/modals/RemoveUserModal.svelte';
 	import ImageModal from '$lib/components/modals/ImageModal.svelte';
+	import ShowUrlModal from '$lib/components/admin/modals/verification/ShowUrlModal.svelte';
 	const modalRegistry: Record<string, ModalComponent> = {
 		confirmModal: { ref: ConfirmModal },
 		removeClassModal: { ref: RemoveClassModal },
@@ -29,7 +30,8 @@
 		addUsersModal: { ref: AddUsersModal },
 		deleteActionModal: { ref: DeleteActionModal },
 		removeUserModal: { ref: RemoveUserModal },
-		imageModal: { ref: ImageModal }
+		imageModal: { ref: ImageModal },
+		showUrlModal: { ref: ShowUrlModal }
 	};
 </script>
 

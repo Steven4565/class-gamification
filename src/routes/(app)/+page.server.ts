@@ -24,7 +24,7 @@ function getStartOfSemester() {
 
 async function getActivities(userId: string, classId: number) {
 	const userActivities = await prisma.userActivities.findMany({
-		where: { userId, classId }
+		where: { userId, classId, valid: true }
 	});
 
 	return userActivities;
@@ -44,7 +44,6 @@ async function getQuotaMap(userId: string, classId: number) {
 			group: true
 		}
 	});
-	if (!activities) error(400, { message: 'No activities found' });
 
 	const activitiesMap: Record<number, number> = userActivities.reduce(
 		(quotaMap: Record<number, number>, { actionTypeId, doneAt }) => {
@@ -74,6 +73,7 @@ export async function load(event) {
 		where: { id: event.locals.user?.id },
 		include: { userClass: true }
 	});
+
 	if (!user) error(400, { message: 'User not found' });
 	if (!user.userClass.length) error(400, { message: 'User class not found' });
 
@@ -99,11 +99,47 @@ export async function load(event) {
 	}
 }
 
+async function createImageActivity(actionId: number, userId: string, classId: number, url: string) {
+	const res = await prisma.userActivities.create({
+		data: {
+			actionTypeId: actionId,
+			userId,
+			doneAt: new Date(),
+			classId: classId
+		}
+	});
+
+	const attribute = await prisma.attribute.findFirst({
+		where: {
+			name: 'url'
+		}
+	});
+	if (!attribute) throw new Error('Failed to fetch data');
+
+	await prisma.activityAttributeValue.create({
+		data: {
+			value: url,
+			userActivitiesId: res.id,
+			attributeId: attribute.id
+		}
+	});
+}
+async function createNonImageActivity(actionId: number, userId: string, classId: number) {
+	await prisma.userActivities.create({
+		data: {
+			actionTypeId: actionId,
+			userId,
+			doneAt: new Date(),
+			classId: classId
+		}
+	});
+}
 export const actions: Actions = {
 	submitAction: async (event) => {
 		const formData = await event.request.formData();
 		const actionId = Number(formData.get('actionId'));
 		const classId = Number(formData.get('classId'));
+		const url = formData.get('url')?.toString();
 		if (Number.isNaN(actionId)) return fail(400, { message: 'Invalid actionId' });
 		if (Number.isNaN(classId)) return fail(400, { message: 'Invalid classId' });
 
@@ -111,10 +147,15 @@ export const actions: Actions = {
 			where: { id: event.locals.user?.id },
 			include: { userClass: true }
 		});
-
-		const action = await prisma.activityType.findFirst({ where: { id: actionId } });
-		if (!action) return fail(400, { message: 'Action not found' });
 		if (!user) return fail(400, { message: 'User not found' });
+
+		const action = await prisma.activityType.findFirst({
+			where: { id: actionId },
+			include: {
+				group: true
+			}
+		});
+		if (!action) return fail(400, { message: 'Action not found' });
 
 		try {
 			await prisma.$transaction(async (prisma) => {
@@ -123,6 +164,7 @@ export const actions: Actions = {
 						userId: user.id,
 						actionTypeId: action.id,
 						classId: classId,
+						valid: true,
 						doneAt: {
 							gte: action.resetTime === 'weekly' ? getStartOfWeek() : getStartOfSemester()
 						}
@@ -130,17 +172,19 @@ export const actions: Actions = {
 				});
 
 				if (quota >= action.maxQuota) {
-					throw new Error('Quota exceeded');
+					return fail(500, { message: 'Bad Request' });
 				}
 
-				await prisma.userActivities.create({
-					data: {
-						actionTypeId: action.id,
-						userId: user.id,
-						doneAt: new Date(),
-						classId: classId
-					}
-				});
+				// TODO: This is terrible. Don't do this. There's no authentication for the url. Please create a proper image server.
+				if (action.group.name == 'imageSemester') {
+					if (!url) throw new Error('Missing url parameter');
+
+					// Handle for image actions
+					await createImageActivity(action.id, user.id, classId, url);
+				} else {
+					// Handle for non image actions
+					await createNonImageActivity(action.id, user.id, classId);
+				}
 			});
 		} catch (e) {
 			console.error(e);

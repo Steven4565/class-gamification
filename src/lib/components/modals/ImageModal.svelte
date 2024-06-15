@@ -1,36 +1,39 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { FileDropzone, getModalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore } from '@skeletonlabs/skeleton';
 
 	const modalStore = getModalStore();
 
-	const selectedAction = $modalStore[0]?.meta?.message;
+	const selectedAction = $modalStore[0]?.meta?.selectedAction;
 	const selectedClass = $modalStore[0]?.meta?.selectedClass;
 	const onFormSubmit = $modalStore[0]?.meta?.onFormSubmit;
 
-	let file: FileList;
-	$: console.log(file);
+	let urlInput: string;
 </script>
 
 {#if $modalStore[0]}
-	<div class="min-w-20">
+	<div class="min-w-20 rounded-md bg-white p-4 shadow-md shadow-[#979797]">
 		<form method="post" action="?/submitAction" use:enhance={onFormSubmit} class="bg-white p-5">
-			<h3 class="h3 py-5">Input proof to submit</h3>
+			<h3 class="h3 py-5 font-bold">Input proof to submit</h3>
 			<input class="input" type="hidden" name="actionId" value={selectedAction?.id} />
 			<input class="input" type="hidden" name="classId" value={selectedClass} />
-
-			<FileDropzone name="files" class="my-5" bind:files={file}>
-				<svelte:fragment slot="lead">(icon)</svelte:fragment>
-				<svelte:fragment slot="message">Drag image here</svelte:fragment>
-				<svelte:fragment slot="meta">Supported files: .png, .jpeg, .jpg</svelte:fragment>
-			</FileDropzone>
+			<input
+				class="input my-3 border-slate-500 bg-slate-200 px-4 py-2"
+				type="text"
+				name="url"
+				bind:value={urlInput}
+			/>
 
 			<div class="flex items-center justify-center">
-				<button class="variant-outline btn" type="submit" disabled={!file}>Submit</button>
+				<button
+					class="variant-outline btn bg-primary-400 text-white"
+					type="submit"
+					disabled={!urlInput}>Submit</button
+				>
 				<button
 					class="variant-filled btn"
 					on:click={() => {
-						if ($modalStore[0].response) $modalStore[0].response(file);
+						if ($modalStore[0].response) $modalStore[0].response(urlInput);
 						modalStore.close();
 					}}>Cancel</button
 				>

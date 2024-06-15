@@ -185,5 +185,36 @@ export const actions: Actions = {
 		if (resError || !res)
 			return fail(500, { message: 'An error occured while removing assignment.' });
 		return { res };
+	},
+	updateClass: async (event) => {
+		const request = await event.request.formData();
+		const id = request.get('id');
+		const name = request.get('name');
+		const description = request.get('description');
+
+		if (
+			!id ||
+			!name ||
+			typeof id !== 'string' ||
+			typeof name !== 'string' ||
+			!description ||
+			typeof description !== 'string'
+		)
+			return fail(400, { message: 'Invalid Input.' });
+
+		const [result, resError] = await errorHandler(
+			prisma.class.update({
+				where: {
+					id: Number(id)
+				},
+				data: {
+					name: name,
+					description: description
+				}
+			})
+		);
+		if (!result || resError)
+			return fail(500, { message: 'An error occured while updating class.' });
+		return { result };
 	}
 };

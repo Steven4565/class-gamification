@@ -1,25 +1,21 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { goto, invalidate, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import ClassButton from '$lib/components/ClassButton.svelte';
 	import UserActivitiyList from '$lib/components/user/UserActivitiyList.svelte';
 	import UserProfile from '$lib/components/user/UserProfile.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
-	import { onDestroy, onMount } from 'svelte';
 
 	const toastStore = getToastStore();
 
 	export let data;
-	$: ({ nextExp, title, currExp } = data);
-	let user = data.user;
+	$: ({ user, classes, currExp, nextExp, title } = data);
 	let actions = data.actions;
 
-	const unsub = selectedClassStore.subscribe((value) => {
+	selectedClassStore.subscribe((value) => {
 		onClassChange(value);
 	});
-
-	onDestroy(unsub);
 
 	async function onClassChange(selectedClass: number) {
 		try {
@@ -32,8 +28,7 @@
 			});
 			actions = data;
 			$page.url.searchParams.set('classId', selectedClass.toString());
-			if (browser)
-				goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+			goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 		} catch {
 			const t: ToastSettings = {
 				message: 'Failed to fetch actions',
@@ -45,7 +40,8 @@
 </script>
 
 <section class="mx-auto w-[900px]">
-	<UserProfile {user} {nextExp} {currExp} {title} />
+	<UserProfile {user} {currExp} {nextExp} {title} />
+	<ClassButton {classes} />
 
 	<div class="mt-5">
 		<h2 class="h2 text-3xl font-bold">Recent Activities</h2>

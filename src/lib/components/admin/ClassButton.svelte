@@ -9,12 +9,13 @@
 		Avatar
 	} from '@skeletonlabs/skeleton';
 	import { DotsVerticalSolid, UsersGroupSolid } from 'flowbite-svelte-icons';
-	import { ActivitySelected } from '$lib/stores/admin/activitySelected';
+	import { page } from '$app/stores';
 
 	export let classData: ClassData;
 	export let index: number;
 
 	const modalStore = getModalStore();
+	$: queryParams = new URLSearchParams($page.url.search);
 
 	const updateModal: ModalSettings = {
 		type: 'component',
@@ -59,7 +60,6 @@
 <button
 	class="relative rounded-xl overflow-hidden shadow-md h-44 w-64 flex flex-col justify-start items-start m-auto hover:bg-slate-200"
 	on:click={() => {
-		$ActivitySelected = true;
 		goto(`/admin/class/${classData.id}`)
 	}}
 >
@@ -103,8 +103,8 @@
 		class="absolute bottom-3 right-3 opacity-25"
 		on:click={(event) => {
 			event.stopPropagation();
-			$ActivitySelected = false;
-			goto(`/admin/class/${classData.id}`);
+			queryParams.set('activity', 'false');
+			goto(`/admin/class/${classData.id}?${queryParams.toString()}`);
 		}}
 	/>
 </button>

@@ -7,7 +7,10 @@
 	import { get } from 'svelte/store';
 
 	export let data;
-	let { actions, userId } = data;
+	let actions = data.actions;
+	let userId = data.userId;
+	$: actions;
+	$: userId;
 
 	$: quests = actions.filter((action) => action.resetTime === 'semester');
 	$: activities = actions.filter((action) => action.resetTime === 'weekly');
@@ -35,7 +38,11 @@
 			modal = {
 				type: 'component',
 				component: 'imageModal',
-				response: (r: boolean | undefined) => console.log('response:', r)
+				meta: {
+					selectedAction,
+					selectedClass: get(selectedClassStore),
+					onFormSubmit
+				}
 			};
 		} else {
 			modal = {
@@ -64,15 +71,18 @@
 					}
 				});
 				toastStore.trigger(successToast);
-			} else if (result.type === 'error') {
+			} else if (result.type === 'failure') {
 				toastStore.trigger(failToast);
 			}
 			await update();
 		};
 	};
 
+	// TODO: Please find a better method than this.
+	let firstTimeLoad = true;
 	selectedClassStore.subscribe((value) => {
-		onClassChange(value);
+		firstTimeLoad = false;
+		if (!firstTimeLoad) onClassChange(value);
 	});
 
 	async function onClassChange(classId: number) {

@@ -1,15 +1,13 @@
 <script lang="ts">
-	  import type { PageData } from './$types';
-    import AdminTable from '$lib/components/admin/AdminTable.svelte';
+	import AdminTable from '$lib/components/admin/verificationTable/AdminTable.svelte';
+	import type { PageData } from './$types';
 
-    export let data: PageData;
-    export let userAct = data.userActivities;
-
+	export let data: PageData;
+	$: ({ userActivities } = data);
 </script>
 
-<div class="mx-auto grid max-w-[90%] gap-5 mb-3 overflow-x-auto">
-  <AdminTable userAct={userAct}/>
+<div class="px-3">
+	<div class="mx-auto mb-3 grid max-w-[90%] gap-5 overflow-x-auto">
+		<AdminTable userAct={userActivities} />
+	</div>
 </div>
-
-
-

@@ -1,45 +1,63 @@
 import { errorHandler } from '$lib/server/errorHandler';
 import prisma from '$lib/server/prisma.js';
 import { error, fail, redirect, type Actions } from '@sveltejs/kit';
+import { activityQuery, type ActivityPointsType } from './types';
 
-type ActivityPointsType = ({
-	actionType: {
-		id: number;
-		name: string;
-		description: string;
-		experience: number;
-		maxQuota: number;
-		resetTime: string;
-		activityGroupId: number;
-		titleId: number | null;
-	};
-} & {
-	id: number;
-	userId: string;
-	actionTypeId: number;
-	classId: number;
-	doneAt: Date;
-	valid: boolean;
-})[];
+function getSortedList(userActivitiesWithPoints: ActivityPointsType[]) {
+	console.log(userActivitiesWithPoints);
+	// const totalPointsPerUser = userActivitiesWithPoints.reduce(
+	// 	(acc, activity) => {
+	// 		if (!acc[activity.userId]) {
+	// 			acc[activity.userId] = {
+	// 				experience: 0,
+	// 				class: activity.class.name
+	// 			};
+	// 		}
+	// 		acc[activity.userId].experience += activity.actionType.experience;
+	// 		return acc;
+	// 	},
+	// 	{} as Record<string, { experience: number; class: string }>
+	// );
 
-function getSortedList(userActivitiesWithPoints: ActivityPointsType) {
 	const totalPointsPerUser = userActivitiesWithPoints.reduce(
 		(acc, activity) => {
+			// If user doesn't exist
 			if (!acc[activity.userId]) {
-				acc[activity.userId] = 0;
+				acc[activity.userId] = [];
 			}
-			acc[activity.userId] += activity.actionType.experience;
+
+			// populate classes
+			const userClass = acc[activity.userId].find((v) => v.className === activity.class.name);
+			if (!userClass) {
+				acc[activity.userId].push({
+					experience: activity.actionType.experience,
+					classId: activity.class.id,
+					className: activity.class.name
+				});
+			} else {
+				userClass.experience += activity.actionType.experience;
+			}
 			return acc;
 		},
-		{} as Record<string, number>
+		{} as Record<string, { classId: number; className: string; experience: number }[]>
 	);
 
-	const totalPointsPerUserArray = Object.entries(totalPointsPerUser).map(
-		([userId, experience]) => ({
-			userId,
-			experience
-		})
-	);
+	const totalPointsPerUserArray: {
+		userId: string;
+		classId: number;
+		className: string;
+		experience: number;
+	}[] = [];
+	Object.entries(totalPointsPerUser).forEach(([k, v]) => {
+		v.forEach((c) => {
+			totalPointsPerUserArray.push({
+				userId: k,
+				classId: c.classId,
+				className: c.className,
+				experience: c.experience
+			});
+		});
+	});
 
 	const sorted = totalPointsPerUserArray.sort((a, b) => b.experience - a.experience);
 
@@ -52,9 +70,7 @@ async function getLocal(classId: number) {
 			where: {
 				classId
 			},
-			include: {
-				actionType: true
-			}
+			include: activityQuery.include
 		})
 	);
 	if (!userActivitiesWithPoints || pointsError) throw pointsError;
@@ -63,11 +79,7 @@ async function getLocal(classId: number) {
 
 async function getGlobal() {
 	const [userActivitiesWithPoints, pointsError] = await errorHandler(
-		prisma.userActivities.findMany({
-			include: {
-				actionType: true
-			}
-		})
+		prisma.userActivities.findMany(activityQuery)
 	);
 	if (!userActivitiesWithPoints || pointsError) throw pointsError;
 
@@ -111,7 +123,7 @@ export async function load({ locals: { user }, url }) {
 	const classId = parseInt(classIdParams);
 	if (Number.isNaN(classId)) error(400, { message: 'Invalid classId' });
 
-	// get local class leaderboar
+	// get local class leaderboard
 	const [leaderboard, leaderboardError] = await errorHandler(getLocal(classId));
 	if (!leaderboard || leaderboardError) return fail(500, { message: 'Failed to get leaderboard' });
 	return { leaderboard };

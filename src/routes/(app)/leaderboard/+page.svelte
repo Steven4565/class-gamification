@@ -70,20 +70,40 @@
 	<div class="flex items-center justify-center gap-10">
 		<div class="grid grid-cols-3 items-start gap-16">
 			{#if leaderboard[1]}
-				<UserPodium name={leaderboard[1].userId} points={leaderboard[1].experience} rank={2} />
+				<UserPodium
+					name={leaderboard[1].userId}
+					className={leaderboard[1].className}
+					points={leaderboard[1].experience}
+					rank={2}
+				/>
 			{/if}
 			{#if leaderboard[0]}
-				<UserPodium name={leaderboard[0].userId} points={leaderboard[0].experience} rank={1} />
+				<UserPodium
+					name={leaderboard[0].userId}
+					className={leaderboard[0].className}
+					points={leaderboard[0].experience}
+					rank={1}
+				/>
 			{/if}
 			{#if leaderboard[2]}
-				<UserPodium name={leaderboard[2].userId} points={leaderboard[2].experience} rank={3} />
+				<UserPodium
+					name={leaderboard[2].userId}
+					className={leaderboard[2].className}
+					points={leaderboard[2].experience}
+					rank={3}
+				/>
 			{/if}
 		</div>
 	</div>
 
-	<div class="flex flex-col gap-4 pb-10">
+	<div class="flex flex-col pb-10">
 		{#each leaderboard.slice(3) as user}
-			<LeaderboardRow name={user.userId} points={user.experience} rank={4} />
+			<LeaderboardRow
+				name={user.userId}
+				points={user.experience}
+				rank={4}
+				className={user.className}
+			/>
 		{/each}
 	</div>
 </div>

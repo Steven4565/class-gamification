@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { number } from 'zod';
+
 	export let name: string;
 	export let points: number;
 	export let rank: number;
+	export let className: string;
 </script>
 
 <div class="mt-5 flex items-center justify-between rounded-xl border-2 border-gray-300 px-4 py-2">
@@ -15,7 +18,10 @@
 				alt=""
 			/>
 		</div>
-		<h5>{name}</h5>
+		<div>
+			<h5>{name}</h5>
+			<h6 class="text-gray">{className}</h6>
+		</div>
 	</div>
 	<div class="right">
 		<p class="p text-right font-bold text-primary-400">{points} Points</p>

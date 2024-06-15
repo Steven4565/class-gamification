@@ -13,7 +13,7 @@
 			alt=""
 			class="h-[150px] w-[150px] rounded-full"
 		/>
-		<h6 class="text-center">{name}</h6>
+		<h6 class="text-center text-xl font-bold">{name}</h6>
 	{:else}
 		<h3 class="pt-10 text-center text-2xl font-bold text-primary-500">{rank}</h3>
 		<img
@@ -21,8 +21,8 @@
 			alt=""
 			class="h-[150px] w-[150px] rounded-full"
 		/>
-		<h6 class="text-center">{name}</h6>
+		<h6 class="text-center text-xl font-bold">{name}</h6>
 	{/if}
-	<p>{points} Points</p>
-	<p>{className}</p>
+	<p class="p font-bold text-primary-400">{points} Points</p>
+	<p class="p text-sm">{className}</p>
 </div>

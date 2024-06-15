@@ -1,20 +1,25 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UserActivitiyList from '$lib/components/user/UserActivitiyList.svelte';
 	import UserProfile from '$lib/components/user/UserProfile.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore.js';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { onDestroy, onMount } from 'svelte';
 
 	const toastStore = getToastStore();
 
 	export let data;
-	$: ({ user, nextExp, title, currExp } = data);
+	$: ({ nextExp, title, currExp } = data);
+	let user = data.user;
 	let actions = data.actions;
 
-	selectedClassStore.subscribe((value) => {
+	const unsub = selectedClassStore.subscribe((value) => {
 		onClassChange(value);
 	});
+
+	onDestroy(unsub);
 
 	async function onClassChange(selectedClass: number) {
 		try {
@@ -27,7 +32,8 @@
 			});
 			actions = data;
 			$page.url.searchParams.set('classId', selectedClass.toString());
-			goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+			if (browser)
+				goto(`./${user.id}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
 		} catch {
 			const t: ToastSettings = {
 				message: 'Failed to fetch actions',

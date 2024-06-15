@@ -2,6 +2,7 @@
 	import { AppBar, Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	import ClassButton from './ClassButton.svelte';
+	import selectedClassStore from '$lib/stores/selectedClassStore';
 
 	interface ClassProp {
 		classId: number;
@@ -11,6 +12,12 @@
 	export let username: string;
 	export let id: string;
 	export let classes: ClassProp[];
+
+	let classId: number;
+	$: classId;
+	selectedClassStore.subscribe((_classId) => {
+		classId = _classId;
+	});
 
 	const popupAvatar: PopupSettings = {
 		event: 'click',
@@ -22,7 +29,7 @@
 <AppBar shadow="shadow-lg">
 	<svelte:fragment slot="lead">
 		<a href="/" class="bg-initial btn px-3">Home</a>
-		<a href="/leaderboard" class="bg-initial btn px-3">Leaderboard</a>
+		<a href={`/leaderboard?classId=${classId}`} class="bg-initial btn px-3">Leaderboard</a>
 	</svelte:fragment>
 	<svelte:fragment slot="trail">
 		<ClassButton {classes} />

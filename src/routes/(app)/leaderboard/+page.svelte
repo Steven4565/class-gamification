@@ -3,12 +3,32 @@
 	import LeaderboardRow from '$lib/components/leaderboard/LeaderboardRow.svelte';
 	import { enhance } from '$app/forms';
 	import { fail, type SubmitFunction } from '@sveltejs/kit';
+	import selectedClassStore from '$lib/stores/selectedClassStore.js';
+	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { onDestroy } from 'svelte';
 
 	export let data;
 
 	$: leaderboard = data.leaderboard || [];
 
 	let isGlobal = false;
+
+	let classId = 0;
+	const unsub = selectedClassStore.subscribe(async (_classId) => {
+		classId = _classId;
+		onClassChange();
+	});
+
+	onDestroy(unsub);
+
+	function onClassChange() {
+		$page.url.searchParams.set('classId', classId.toString());
+		isGlobal = false;
+		if (browser)
+			goto(`.${$page.url.pathname}?${$page.url.searchParams.toString()}`, { invalidateAll: true });
+	}
 
 	const onSubmit: SubmitFunction = ({ action, cancel }) => {
 		if (action.search === '?/global') {
@@ -21,11 +41,11 @@
 
 		return async ({ result, update }) => {
 			if (result.type === 'success') {
-				if (result.data) leaderboard = result.data.leaderboard;
-				else {
+				if (result.data) {
+					leaderboard = result.data.leaderboard;
+				} else {
 					return fail(400, { message: 'No data returned' });
 				}
-				await update();
 			}
 		};
 	};
@@ -39,7 +59,8 @@
 				>All</button
 			>
 		</form>
-		<form method="post" action="?/local" use:enhance={onSubmit}>
+		<form id="local-form-button" method="post" action="?/local" use:enhance={onSubmit}>
+			<input type="hidden" name="classId" value={classId} />
 			<button class="variant-filled-primary btn rounded-xl py-1" type="submit" disabled={!isGlobal}
 				>This class</button
 			>
@@ -51,33 +72,38 @@
 			{#if leaderboard[1]}
 				<UserPodium
 					name={leaderboard[1].userId}
+					className={leaderboard[1].className}
 					points={leaderboard[1].experience}
 					rank={2}
-					url="/user/100"
 				/>
 			{/if}
 			{#if leaderboard[0]}
 				<UserPodium
 					name={leaderboard[0].userId}
+					className={leaderboard[0].className}
 					points={leaderboard[0].experience}
 					rank={1}
-					url="/user/100"
 				/>
 			{/if}
 			{#if leaderboard[2]}
 				<UserPodium
 					name={leaderboard[2].userId}
+					className={leaderboard[2].className}
 					points={leaderboard[2].experience}
 					rank={3}
-					url="/user/100"
 				/>
 			{/if}
 		</div>
 	</div>
 
-	<div class="flex flex-col gap-4 pb-10">
+	<div class="flex flex-col pb-10">
 		{#each leaderboard.slice(3) as user}
-			<LeaderboardRow name={user.userId} points={user.experience} rank={4} />
+			<LeaderboardRow
+				name={user.userId}
+				points={user.experience}
+				rank={4}
+				className={user.className}
+			/>
 		{/each}
 	</div>
 </div>

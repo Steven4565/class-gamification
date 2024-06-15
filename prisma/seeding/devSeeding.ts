@@ -204,14 +204,24 @@ async function main() {
 			{ userId: 'user2', classId: 1 },
 			{ userId: 'user2', classId: 2 },
 			{ userId: 'user3', classId: 2 },
-			{ userId: 'user4', classId: 2 }
+			{ userId: 'user4', classId: 2 },
+			{ userId: 'user4', classId: 3 }
 		]
 	});
 
 	await prisma.userActivities.createMany({
 		data: [
 			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-21') },
-			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') }
+			{ userId: 'user', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') },
+			{ userId: 'user2', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') },
+			{ userId: 'user2', classId: 1, actionTypeId: 2, doneAt: new Date('2024-03-03') },
+			{ userId: 'user3', classId: 1, actionTypeId: 3, doneAt: new Date('2024-03-03') },
+			{ userId: 'user3', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') },
+			{ userId: 'user4', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') },
+			{ userId: 'user4', classId: 1, actionTypeId: 1, doneAt: new Date('2024-03-03') },
+			{ userId: 'user4', classId: 2, actionTypeId: 2, doneAt: new Date('2024-03-03') },
+			{ userId: 'user4', classId: 2, actionTypeId: 1, doneAt: new Date('2024-03-03') },
+			{ userId: 'user4', classId: 3, actionTypeId: 4, doneAt: new Date('2024-03-03') }
 		]
 	});
 }

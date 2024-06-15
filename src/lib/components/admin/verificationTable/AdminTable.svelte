@@ -4,14 +4,12 @@
 	import Pagination from '$lib/components/admin/verificationTable/Pagination.svelte';
 	import RowsPerPage from '$lib/components/admin/verificationTable/RowsPerPage.svelte';
 	import { studentActivityDownloadExcel } from '$lib/utils/exportToExcel';
-	import { getModalStore, getToastStore, popup } from '@skeletonlabs/skeleton';
-	import type { ModalSettings, PopupSettings, ToastSettings } from '@skeletonlabs/skeleton';
-	import { onMount } from 'svelte';
+	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
+	import type { ModalSettings, ToastSettings } from '@skeletonlabs/skeleton';
 	import type { RowTableUserActivity, TableUserActivity } from '$lib/types/verificationTable';
 	import { TrashBinOutline, UndoOutline } from 'flowbite-svelte-icons';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { invalidate } from '$app/navigation';
 
 	let checkedStates: { [key: number]: boolean } = {};
 
@@ -27,6 +25,7 @@
 				username: item.user.username,
 				actionTypeName: item.actionType.name,
 				doneAt: item.doneAt.toDateString() + ' ' + item.doneAt.toLocaleTimeString(),
+				doneAtUnix: item.doneAt.getTime(),
 				valid: item.valid,
 				proof: null
 			};
@@ -166,7 +165,7 @@
 					</td>
 					<ThSort {handler} orderBy="username">Name</ThSort>
 					<ThSort {handler} orderBy="actionTypeName">Activities</ThSort>
-					<ThSort {handler} orderBy="doneAt">Date and Time</ThSort>
+					<ThSort {handler} orderBy="doneAtUnix">Date and Time</ThSort>
 					<td class="font-bold">Proof</td>
 					<td class="font-bold">Validation</td>
 					<td class="font-bold">Action</td>

@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import AdminTable from '$lib/components/admin/verificationTable/AdminTable.svelte';
-	import { page } from '$app/stores';
 	import type { PageData } from './$types';
 
 	export let data: PageData;

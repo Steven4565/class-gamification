@@ -41,6 +41,7 @@ export interface RowTableUserActivity {
 	username: string;
 	actionTypeName: string;
 	doneAt: string;
+	doneAtUnix: number;
 	valid: boolean;
 	proof: unknown;
 }

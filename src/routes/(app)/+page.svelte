@@ -4,7 +4,6 @@
 	import type { ActivityProp } from '$lib/types/activity.js';
 	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { type SubmitFunction } from '@sveltejs/kit';
-	import { onDestroy, onMount } from 'svelte';
 	import { get } from 'svelte/store';
 
 	export let data;

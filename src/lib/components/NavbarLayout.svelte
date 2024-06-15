@@ -3,6 +3,8 @@
 
 	import ClassButton from './ClassButton.svelte';
 	import selectedClassStore from '$lib/stores/selectedClassStore';
+	import person from '$lib/assets/icons/person.svg';
+	import logout from '$lib/assets/icons/logout.svg';
 
 	interface ClassProp {
 		classId: number;
@@ -25,7 +27,7 @@
 		placement: 'bottom-start'
 	};
 
-	const cButtonClass = 'w-full px-3 py-2 text-left hover:bg-primary-50 block';
+	const cButtonClass = 'w-full p-2 text-left hover:bg-primary-50 flex items-center gap-2';
 </script>
 
 <AppBar shadow="shadow-lg">
@@ -58,10 +60,16 @@
 				</div>
 			</div>
 			<hr class="my-3 h-[2px] bg-slate-400" />
-			<a href={'/user/' + id} class={cButtonClass}>Profile</a>
+			<a href={'/user/' + id} class={cButtonClass}>
+				<img src={person} alt="Person Icon" class="h-8 invert-[51%] filter" />
+				<p>Profile</p>
+			</a>
 			<hr class="my-2 h-[2px] bg-slate-400" />
 			<form action="/?/logout" method="post">
-				<button type="submit" class={cButtonClass}>Logout</button>
+				<button type="submit" class={cButtonClass}>
+					<img src={logout} alt="Person Icon" class="h-7 invert-[51%] filter" />
+					<p>Logout</p>
+				</button>
 			</form>
 		</div>
 	</svelte:fragment>

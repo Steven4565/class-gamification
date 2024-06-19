@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { number } from 'zod';
-
 	export let name: string;
 	export let points: number;
 	export let rank: number;

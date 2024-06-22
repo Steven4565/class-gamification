@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import LoginBackground from '$lib/assets/login/LoginGradient.png';
 	import LoginImage from '$lib/assets/login/LoginImage.png';
 	export let form;
 </script>

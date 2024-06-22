@@ -97,11 +97,11 @@
 	</div>
 
 	<div class="flex flex-col pb-10">
-		{#each leaderboard.slice(3) as user}
+		{#each leaderboard.slice(3) as user, i}
 			<LeaderboardRow
 				name={user.userId}
 				points={user.experience}
-				rank={4}
+				rank={i + 4}
 				className={user.className}
 			/>
 		{/each}

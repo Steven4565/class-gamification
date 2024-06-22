@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import LoginImage from '$lib/assets/login/LoginImage.png';
 	export let form;
 </script>
 
 <div class="grid h-full w-full place-items-center bg-primary-400">
-	<div class="mx-auto flex h-[600px] w-[1200px] overflow-hidden rounded-3xl bg-white">
+	<div
+		class="mx-auto flex h-[600px] max-h-[90%] w-[1200px] max-w-[80%] overflow-hidden rounded-3xl bg-white"
+	>
 		<div class=" grid h-full w-1/2 place-items-center bg-white">
 			<div class="h-[400px] w-[300px]">
 				<h2 class="h2 pb-1 text-center font-bold">LOGIN</h2>
@@ -47,6 +50,13 @@
 				</form>
 			</div>
 		</div>
-		<div class="h-full w-1/2 bg-blue-500">whale image</div>
+		<div class="relative h-full w-1/2">
+			<img
+				src={LoginImage}
+				alt="Login Background"
+				class="absolute left-0 top-0 z-10 h-full w-full object-cover"
+				draggable={false}
+			/>
+		</div>
 	</div>
 </div>

@@ -10,6 +10,7 @@
 	import { TrashBinOutline, UndoOutline } from 'flowbite-svelte-icons';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import ShowUrlModal from '../modals/verification/ShowUrlModal.svelte';
 
 	let checkedStates: { [key: number]: boolean } = {};
 
@@ -81,7 +82,7 @@
 		return undefined;
 	}
 
-	function onShowImageProof(value: unknown) {
+	function onShowImageProof(id: number, value: unknown) {
 		const processed = extractValue(value);
 		if (!processed) throw new Error('Failed fetching url');
 
@@ -91,7 +92,8 @@
 			title: 'Check Url Proof',
 			component: 'showUrlModal',
 			meta: {
-				url
+				url,
+				id
 			}
 		};
 		modalStore.trigger(modal);
@@ -191,7 +193,7 @@
 								<button
 									class="anchor"
 									on:click={() => {
-										onShowImageProof(row.proof);
+										onShowImageProof(row.id, row.proof);
 									}}
 								>
 									Proof
